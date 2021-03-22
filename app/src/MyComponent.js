@@ -2,6 +2,7 @@ import React from 'react';
 import { newContextComponents } from '@drizzle/react-components';
 import logo from './logo.png';
 import { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 
 const ipfsClient = require('ipfs-http-client');
 const ipfs = ipfsClient({
@@ -17,35 +18,16 @@ export default ({ drizzle, drizzleState }) => {
   // const [web3Acc, setWeb3Acc] = useState(null);
   // const [web3Bal, setWeb3Bal] = useState(null);
 
-  // useEffect(() => {
-  //   function loadWeb3Data(web3) {
-  //     web3.eth.getAccounts().then((accounts) => {
-  //       setWeb3Acc(accounts[0]);
-  //       drizzleState.accounts = accounts;
-  //       web3.eth.getBalance(accounts[0]).then((res) => {
-  //         drizzleState.accountBalances[accounts[0]] = res;
-  //         setWeb3Bal(res);
-  //       });
-  //     });
-  //   }
-
-  //   async function listenMMAccount() {
-  //     window.ethereum.on('accountsChanged', async function () {
-  //       loadWeb3Data(drizzle.web3);
-  //     });
-  //   }
-
-  //   loadWeb3Data(drizzle.web3);
-  //   listenMMAccount();
-  // });
-
-  const [storageFile, setStorageFile] = useState(null);
-  const [proposal, setProposal] = useState({
-    description: 'No realizada',
-    hash: '',
+  useEffect(() => {
+    console.log(
+      drizzle.store.getState().contracts.ProposalContract.document_hash
+    );
   });
 
-  function captureFile(event) {
+  const [storageFile, setStorageFile] = useState(null);
+  const { register, handleSubmit, errors } = useForm();
+
+  const captureFile = (event) => {
     event.preventDefault();
     const file = event.target.files[0];
     const reader = new window.FileReader();
@@ -53,13 +35,28 @@ export default ({ drizzle, drizzleState }) => {
     reader.onloadend = () => {
       setStorageFile(Buffer(reader.result));
     };
-  }
-  async function onSubmit(event) {
-    event.preventDefault();
-    console.log('Submitting file to ipfs...');
-    const submission = await ipfs.add(storageFile);
-    setProposal((prevProposal) => ({ ...prevProposal, hash: submission.path }));
-  }
+  };
+  const onSubmit = async (data) => {
+    console.log(
+      await drizzle.contracts.ProposalContract.methods.document_hash().call()
+    );
+    const keyValue = drizzle.contracts.ProposalContract.methods.document_hash.cacheCall();
+    console.log(
+      'Esperando ando',
+      await drizzle.store.getState().contracts.ProposalContract.document_hash
+    );
+    if (
+      (await drizzle.store.getState().contracts.ProposalContract.document_hash[
+        keyValue
+      ].value) == ''
+    ) {
+      const submission = await ipfs.add(storageFile);
+      drizzle.contracts.ProposalContract.methods
+        .store(data.name, submission.path)
+        .send();
+    }
+  };
+
   return (
     <div className="App">
       <div>
@@ -80,19 +77,25 @@ export default ({ drizzle, drizzleState }) => {
         />
       </div>
       <div className="section">
-        <h2>Proposal contract {proposal.description}</h2>
+        <h2>Proposal contract</h2>
         <p>
           This shows a simple ContractData component with no arguments, along
           with a form to set its value.
         </p>
         <p>
-          <strong>Stored Value: {proposal.hash}</strong>
+          <strong>Stored Value:</strong>
           <ContractData
             drizzle={drizzle}
             drizzleState={drizzleState}
             contract="ProposalContract"
             method="proposal_description"
           />
+          {/* <ContractData
+            drizzle={drizzle}
+            drizzleState={drizzleState}
+            contract="ProposalContract"
+            method="document_hash"
+          /> */}
         </p>
         <p>
           <strong>Votes Value: </strong>
@@ -112,6 +115,34 @@ export default ({ drizzle, drizzleState }) => {
             method="proposal_reputation"
           />
         </p>
+        <div className="form">
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="form-control ">
+              <label>Nombre de la propuesta</label>
+              <input
+                type="text"
+                name="name"
+                ref={register({
+                  required: 'El nombre de la propuesta es requerido',
+                })}
+              />
+              {errors.email && (
+                <p className="errorMsg">{errors.name.message}</p>
+              )}
+            </div>
+            <div className="form-control">
+              <label>Documento de respaldo</label>
+              <input type="file" name="file" onChange={captureFile} />
+              {errors.password && (
+                <p className="errorMsg">{errors.file.message}</p>
+              )}
+            </div>
+            <div className="form-control">
+              <label></label>
+              <button type="submit">Registrar propuesta</button>
+            </div>
+          </form>
+        </div>
 
         <div className="section">
           <h2>Change Meme</h2>
