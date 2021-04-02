@@ -19,9 +19,7 @@ export default ({ drizzle, drizzleState }) => {
   // const [web3Bal, setWeb3Bal] = useState(null);
 
   useEffect(() => {
-    console.log(
-      drizzle.store.getState().contracts.ProposalContract.document_hash
-    );
+    console.log(drizzleState.accounts[0]);
   });
 
   const [storageFile, setStorageFile] = useState(null);
@@ -144,21 +142,6 @@ export default ({ drizzle, drizzleState }) => {
           </form>
         </div>
 
-        <div className="section">
-          <h2>Change Meme</h2>
-          <form onSubmit={onSubmit}>
-            <input type="text" onChange={() => {}} />
-            <input type="file" onChange={captureFile} />
-            <input type="submit" />
-          </form>
-        </div>
-
-        <ContractForm
-          drizzle={drizzle}
-          contract="ProposalContract"
-          method="store"
-          sendArgs={{ gas: 1000000 }}
-        />
         <ContractForm
           drizzle={drizzle}
           contract="ProposalContract"

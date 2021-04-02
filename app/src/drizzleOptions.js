@@ -5,6 +5,7 @@ const options = {
   web3: {
     block: false,
     customProvider: new Web3(Web3.givenProvider || 'ws://localhost:7545'),
+    //new Web3(Web3.givenProvider || 'ws://localhost:7545')
   },
   contracts: [ProposalContract],
   events: {
