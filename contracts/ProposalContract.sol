@@ -9,7 +9,7 @@ pragma solidity >=0.4.21 <0.7.0;
 contract ProposalContract {
     
 
-    address owner;
+    address public owner;
     string public proposal_description = '';
     string public document_hash = '';
     int256 public proposal_reputation = 0;
@@ -41,7 +41,7 @@ contract ProposalContract {
         }else if(_vote > 0){
             positive += 1;
         }else{
-            negative -=1;
+            negative +=1;
         }
         update_reputation();
     }
