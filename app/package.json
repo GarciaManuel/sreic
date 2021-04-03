@@ -10,6 +10,7 @@
     "@emotion/styled": "^11.1.5",
     "@material-ui/core": "^5.0.0-alpha.28",
     "ipfs-http-client": "^49.0.4",
+    "perf_hooks": "0.0.1",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
     "react-hook-form": "^6.15.5",

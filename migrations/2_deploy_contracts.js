@@ -1,11 +1,9 @@
-const SimpleStorage = artifacts.require('SimpleStorage');
-const TutorialToken = artifacts.require('TutorialToken');
-const ComplexStorage = artifacts.require('ComplexStorage');
+const ZkIdentity = artifacts.require('ZkIdentity');
+const Verifier = artifacts.require('Verifier');
 const ProposalContract = artifacts.require('ProposalContract');
 
 module.exports = function (deployer) {
-  deployer.deploy(SimpleStorage);
-  deployer.deploy(TutorialToken);
-  deployer.deploy(ComplexStorage);
+  deployer.deploy(Verifier);
+  deployer.deploy(ZkIdentity);
   deployer.deploy(ProposalContract);
 };

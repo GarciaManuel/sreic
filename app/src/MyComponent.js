@@ -5,6 +5,7 @@ import { Grid } from '@material-ui/core';
 
 import VoteForm from './VoteForm.js';
 import ProposalForm from './ProposalForm';
+import Zk from './Zk.js';
 
 const { AccountData, ContractData } = newContextComponents;
 
@@ -47,6 +48,7 @@ export default ({ drizzle, drizzleState }) => {
   return (
     <div className="App">
       <div className="section">
+        <Zk></Zk>
         <h2>Cuenta activa </h2>
         <AccountData
           drizzle={drizzle}

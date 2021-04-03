@@ -22,6 +22,11 @@
   "homepage": "https://github.com/truffle-box/drizzle-box#readme",
   "dependencies": {
     "@material-ui/icons": "^4.11.2",
-    "@openzeppelin/contracts": "^2.4.0"
+    "@openzeppelin/contracts": "^2.4.0",
+    "circom": "^0.5.42",
+    "circomlib": "^0.5.2",
+    "perf_hooks": "0.0.1",
+    "snarkjs": "^0.3.60",
+    "websnark": "0.0.5"
   }
 }
