@@ -6,6 +6,8 @@ import drizzleOptions from './drizzleOptions';
 import MyComponent from './MyComponent';
 import AppStateProvider from './AppStateProvider';
 import './App.css';
+import ProposalForm from './ProposalForm';
+import CandidatesList from './CandidatesList';
 
 const drizzle = new Drizzle(drizzleOptions);
 
@@ -34,7 +36,8 @@ const App = () => {
             }
 
             return (
-              <MyComponent drizzle={drizzle} drizzleState={drizzleState} />
+              // <MyComponent drizzle={drizzle} drizzleState={drizzleState} />
+              <CandidatesList drizzle={drizzle} drizzleState={drizzleState} />
             );
           }}
         </DrizzleContext.Consumer>
