@@ -3,13 +3,10 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
 import Button from '@material-ui/core/Button';
 import { AppStateContext } from './AppStateProvider';
-import { newContextComponents } from '@drizzle/react-components';
 
 export default ({ drizzle, drizzleState, proposalIndex }) => {
-  const { ContractData } = newContextComponents;
   const { SetNotification, SetMessage } = React.useContext(AppStateContext);
   const [value, setValue] = React.useState('0');
   const [error, setError] = React.useState(false);

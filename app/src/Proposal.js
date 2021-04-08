@@ -2,8 +2,6 @@ import React from 'react';
 import {
   Divider,
   ListItem,
-  ListItemAvatar,
-  Avatar,
   ListItemText,
   Typography,
   Button,
