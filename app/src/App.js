@@ -3,14 +3,13 @@ import { useEffect } from 'react';
 import { DrizzleContext } from '@drizzle/react-plugin';
 import { Drizzle } from '@drizzle/store';
 import drizzleOptions from './drizzleOptions';
-import MyComponent from './MyComponent';
 import AppStateProvider from './AppStateProvider';
 import './App.css';
-import ProposalForm from './ProposalForm';
 import CandidatesList from './CandidatesList';
+import { Route, BrowserRouter as Router } from 'react-router-dom';
+import CandidateProfile from './CandidateProfile';
 
 const drizzle = new Drizzle(drizzleOptions);
-
 const App = () => {
   useEffect(() => {
     async function fetchWallet() {
@@ -36,8 +35,25 @@ const App = () => {
             }
 
             return (
-              // <MyComponent drizzle={drizzle} drizzleState={drizzleState} />
-              <CandidatesList drizzle={drizzle} drizzleState={drizzleState} />
+              <div className="App">
+                <div className="section">
+                  <Router>
+                    <Route exact path={`/`}>
+                      <CandidatesList
+                        drizzle={drizzle}
+                        drizzleState={drizzleState}
+                      />
+                    </Route>
+                    <Route path={`/candidate/:index`}>
+                      <CandidateProfile
+                        drizzle={drizzle}
+                        drizzleState={drizzleState}
+                      />
+                    </Route>
+                  </Router>
+                  {/* <MyComponent drizzle={drizzle} drizzleState={drizzleState} /> */}
+                </div>
+              </div>
             );
           }}
         </DrizzleContext.Consumer>

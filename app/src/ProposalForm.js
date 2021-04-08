@@ -1,8 +1,15 @@
 import * as React from 'react';
-import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import { AppStateContext } from './AppStateProvider';
-import { Button, TextField } from '@material-ui/core';
+import {
+  Button,
+  TextField,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextareaAutosize,
+} from '@material-ui/core';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -16,7 +23,9 @@ const ipfs = ipfsClient({
 export default ({ drizzle, drizzleState }) => {
   const { SetNotification, SetMessage } = React.useContext(AppStateContext);
   const [storageFile, setStorageFile] = useState(null);
+  const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [period, setPeriod] = useState('');
   const { handleSubmit } = useForm();
   const contractMethods = drizzle.contracts.ProposalContract.methods;
 
@@ -31,37 +40,36 @@ export default ({ drizzle, drizzleState }) => {
   };
 
   const onSubmit = async () => {
-    if ((await contractMethods.document_hash().call()) === '') {
-      try {
-        const submission = await ipfs.add(storageFile);
-        contractMethods
-          .store(description, submission.path)
-          .send()
-          .then(() => {
-            SetNotification('success');
-            SetMessage(
-              'La propuesta fue compartida con éxito, se ha registrado correctamente.'
-            );
-          })
-          .catch(function (error) {
-            if (error.code === -32603) {
-              SetNotification('error');
-              SetMessage('Ocurrio un error inesperado' + String(error));
-            } else {
-              SetNotification('warning');
-              SetMessage('Has cancelado tu registro de propuesta.');
-            }
-          });
-      } catch (error) {
-        SetNotification('error');
-        SetMessage(
-          'Hubo un error durante la ejecución del contrato en la red, intenta más tarde.'
-        );
-        console.log('error');
-      }
-    } else {
+    try {
+      const submission = await ipfs.add(storageFile);
+      contractMethods
+        .createProposal(name, description, String(period), submission.path)
+        .send()
+        .then(() => {
+          SetNotification('success');
+          SetMessage(
+            'La propuesta fue compartida con éxito, se ha registrado correctamente.'
+          );
+          setStorageFile(null);
+          setName('');
+          setDescription('');
+          setPeriod('');
+        })
+        .catch(function (error) {
+          if (error.code === -32603) {
+            SetNotification('error');
+            SetMessage('Ocurrio un error inesperado' + String(error));
+          } else {
+            SetNotification('warning');
+            SetMessage('Has cancelado tu registro de propuesta.');
+          }
+        });
+    } catch (error) {
       SetNotification('error');
-      SetMessage('Esta acción no puede continuarse.');
+      SetMessage(
+        'Hubo un error durante la ejecución del contrato en la red, intenta más tarde.'
+      );
+      console.log('error');
     }
   };
 
@@ -77,18 +85,51 @@ export default ({ drizzle, drizzleState }) => {
           <FormLabel sx={{ mb: 3 }}>
             Presenta tu idea para que la ciudadanía comparta su opinión.
           </FormLabel>
+
           <TextField
-            label="Descripción / Nombre de la propuesta"
+            sx={{ mb: 2 }}
+            label="Nombre de la propuesta"
             id="name"
             name="name"
             type="text"
+            value={name}
+            onChange={(event) => {
+              setName(event.target.value);
+            }}
+            error={name.length === 0 ? true : false}
+            helperText={name.length === 0 ? 'Agrega un nombre' : ''}
+          />
+          <TextareaAutosize
+            sx={{ mb: 2 }}
+            style={{ height: 150 }}
+            aria-label="Breve descripción"
+            placeholder="Breve descripción"
+            id="description"
+            name="description"
+            type="text"
             value={description}
             onChange={changeDescription}
-            error={description.length === 0 ? true : false}
-            helperText={
-              description.length === 0 ? 'Agrega una descripción' : ''
-            }
           />
+          <FormControl variant="outlined" sx={{ mt: 2, mb: 2 }}>
+            <InputLabel id="periodlabel">Periodo</InputLabel>
+            <Select
+              labelId="periodlabel"
+              id="period"
+              value={period}
+              onChange={(event) => {
+                setPeriod(event.target.value);
+              }}
+              label="Periodo"
+              error={period < 2000 || period > 2022 ? true : false}
+            >
+              {[...Array(12)].map((val, i) => (
+                <MenuItem value={2000 + 2 * i} key={i}>
+                  {2000 + 2 * i}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
           <Button variant="contained" component="label">
             {storageFile === null
               ? 'Cargar documento de respaldo de propuesta'

@@ -8,7 +8,7 @@ import Button from '@material-ui/core/Button';
 import { AppStateContext } from './AppStateProvider';
 import { newContextComponents } from '@drizzle/react-components';
 
-export default ({ drizzle, drizzleState }) => {
+export default ({ drizzle, drizzleState, proposalIndex }) => {
   const { ContractData } = newContextComponents;
   const { SetNotification, SetMessage } = React.useContext(AppStateContext);
   const [value, setValue] = React.useState('0');
@@ -24,7 +24,7 @@ export default ({ drizzle, drizzleState }) => {
     let submitValue = parseInt(value);
     try {
       drizzle.contracts.ProposalContract.methods
-        .vote(submitValue)
+        .voteProposal(proposalIndex, submitValue)
         .send()
         .then(() => {
           SetNotification('success');
@@ -56,16 +56,8 @@ export default ({ drizzle, drizzleState }) => {
     <>
       <form onSubmit={handleSubmit}>
         <FormControl component="fieldset" error={error}>
-          <h2>Votación para la propuesta: </h2>
+          <h4>Votación para la propuesta: </h4>
 
-          <FormLabel>
-            <ContractData
-              drizzle={drizzle}
-              drizzleState={drizzleState}
-              contract="ProposalContract"
-              method="proposal_description"
-            />
-          </FormLabel>
           <RadioGroup
             aria-label="voting"
             name="voting"
