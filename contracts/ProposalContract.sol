@@ -188,4 +188,18 @@ contract ProposalContract {
     function updateProposalReputation(uint proposalIndex) private{
         allProposals[proposalIndex].reputation =  (allProposals[proposalIndex].positive * 100 + (allProposals[proposalIndex].neutral*100/2) + allProposals[proposalIndex].negative * (0))/(allProposals[proposalIndex].votes * 10);
     }
+
+    function updateCandidateReputation(uint indexCandidate) public returns(bool updated){
+        require(indexCandidate>= 0 && indexCandidate < allCandidatesIndex.length);
+        address candidateAddress = allCandidatesIndex[indexCandidate];
+        require(allCandidates[candidateAddress].proposalsIndex.length > 0);
+        Candidate memory candidate = allCandidates[candidateAddress];
+
+        int256 cumulative = 0;
+        for (uint256 index = 0; index < candidate.proposalsIndex.length; index++) {
+            cumulative += allProposals[candidate.proposalsIndex[index]].reputation;
+        }
+        allCandidates[candidateAddress].reputation =  cumulative/(int256(candidate.proposalsIndex.length));
+        return true;
+    }
 }

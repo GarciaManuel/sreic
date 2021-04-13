@@ -64,6 +64,7 @@ export default ({
             drizzle={drizzle}
             drizzleState={drizzleState}
             proposalIndex={currentProposal.index}
+            handleClose={handleClose}
           />
         </DialogContent>
         <DialogActions>

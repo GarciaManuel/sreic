@@ -8,6 +8,7 @@ import './App.css';
 import CandidatesList from './CandidatesList';
 import { Route, BrowserRouter as Router } from 'react-router-dom';
 import CandidateProfile from './CandidateProfile';
+import Navbar from './Navbar';
 
 const drizzle = new Drizzle(drizzleOptions);
 const App = () => {
@@ -35,25 +36,29 @@ const App = () => {
             }
 
             return (
-              <div className="App">
-                <div className="section">
-                  <Router>
-                    <Route exact path={`/`}>
-                      <CandidatesList
-                        drizzle={drizzle}
-                        drizzleState={drizzleState}
-                      />
-                    </Route>
-                    <Route path={`/candidate/:index`}>
-                      <CandidateProfile
-                        drizzle={drizzle}
-                        drizzleState={drizzleState}
-                      />
-                    </Route>
-                  </Router>
-                  {/* <MyComponent drizzle={drizzle} drizzleState={drizzleState} /> */}
-                </div>
-              </div>
+              <>
+                <Router>
+                  <Navbar drizzle={drizzle} drizzleState={drizzleState} />
+
+                  <div className="App">
+                    <div className="section">
+                      <Route exact path={`/`}>
+                        <CandidatesList
+                          drizzle={drizzle}
+                          drizzleState={drizzleState}
+                        />
+                      </Route>
+                      <Route path={`/candidate/:index`}>
+                        <CandidateProfile
+                          drizzle={drizzle}
+                          drizzleState={drizzleState}
+                        />
+                      </Route>
+                      {/* <MyComponent drizzle={drizzle} drizzleState={drizzleState} /> */}
+                    </div>
+                  </div>
+                </Router>
+              </>
             );
           }}
         </DrizzleContext.Consumer>

@@ -5,34 +5,13 @@ import { Grid, List, ListItem } from '@material-ui/core';
 import ProposalForm from './ProposalForm';
 import Candidate from './Candidate';
 
-const { AccountData, ContractData } = newContextComponents;
-
+const { ContractData } = newContextComponents;
 export default ({ drizzle, drizzleState }) => {
   const [isCandidate, setIsCandidate] = useState(false);
   const [candidates, setCandidates] = useState([]);
   const mainAccount = drizzleState.accounts[0];
   const contractMethods = drizzle.contracts.ProposalContract.methods;
 
-  // useEffect(() => {
-  //   const canVote = async () => {
-  //     const owner = await contractMethods.owner().call();
-  //     if (owner === undefined) return setIsOwner(true);
-  //     else if (
-  //       owner.value !== mainAccount &&
-  //       owner.value !== 0x0 &&
-  //       owner.value !== undefined
-  //     )
-  //       return setIsOwner(false);
-  //     // if (
-  //     //   (await drizzle.store.getState().contracts.ProposalContract.owner[
-  //     //     keyValue
-  //     //   ].value) !== drizzleState.accounts[0]
-  //     // )
-  //     //   return setIsOwner(false);
-  //     return setIsOwner(true);
-  //   };
-  //   canVote();
-  // }, [contractMethods, mainAccount]);
   useEffect(() => {
     const canPropose = async () => {
       const owner = await contractMethods.isCandidate(mainAccount).call();
@@ -45,7 +24,6 @@ export default ({ drizzle, drizzleState }) => {
   var candidatesInfo = drizzleState.contracts.ProposalContract.getAllCandidates;
   useEffect(() => {
     const getCandidates = () => {
-      //const candidates = await contractMethods.getAllCandidates().call();
       if ('0x0' in candidatesInfo) setCandidates(candidatesInfo['0x0'].value);
     };
     getCandidates();
@@ -53,14 +31,6 @@ export default ({ drizzle, drizzleState }) => {
   return (
     <>
       <div className="section">
-        <h2>Cuenta activa </h2>
-        <AccountData
-          drizzle={drizzle}
-          drizzleState={drizzleState}
-          accountIndex={0}
-          units="ether"
-          precision={3}
-        />
         <ListItem style={{ display: 'none' }}>
           <ContractData
             drizzle={drizzle}
@@ -80,15 +50,6 @@ export default ({ drizzle, drizzleState }) => {
                 <Candidate candidateInfo={candidateInfo} key={i} />
               ))}
             </List>
-            {/* <p>
-              <strong>Descripción: </strong>
-              <ContractData
-                drizzle={drizzle}
-                drizzleState={drizzleState}
-                contract="ProposalContract"
-                method="proposal_description"
-              />
-            </p> */}
           </Grid>
           <Grid
             item
