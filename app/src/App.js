@@ -9,6 +9,7 @@ import CandidatesList from './CandidatesList';
 import { Route, BrowserRouter as Router } from 'react-router-dom';
 import CandidateProfile from './CandidateProfile';
 import Navbar from './Navbar';
+import Admin from './Admin';
 
 const drizzle = new Drizzle(drizzleOptions);
 const App = () => {
@@ -25,21 +26,20 @@ const App = () => {
     fetchWallet();
   }, []);
   return (
-    <AppStateProvider>
-      <DrizzleContext.Provider drizzle={drizzle}>
-        <DrizzleContext.Consumer>
-          {(drizzleContext) => {
-            const { drizzle, drizzleState, initialized } = drizzleContext;
+    <DrizzleContext.Provider drizzle={drizzle}>
+      <DrizzleContext.Consumer>
+        {(drizzleContext) => {
+          const { drizzle, drizzleState, initialized } = drizzleContext;
 
-            if (!initialized) {
-              return 'Loading...';
-            }
+          if (!initialized) {
+            return 'Loading...';
+          }
 
-            return (
-              <>
-                <Router>
-                  <Navbar drizzle={drizzle} drizzleState={drizzleState} />
-
+          return (
+            <>
+              <Router>
+                <Navbar drizzle={drizzle} drizzleState={drizzleState} />
+                <AppStateProvider>
                   <div className="App">
                     <div className="section">
                       <Route exact path={`/`}>
@@ -54,16 +54,19 @@ const App = () => {
                           drizzleState={drizzleState}
                         />
                       </Route>
+                      <Route path={`/admin`}>
+                        <Admin drizzle={drizzle} drizzleState={drizzleState} />
+                      </Route>
                       {/* <MyComponent drizzle={drizzle} drizzleState={drizzleState} /> */}
                     </div>
                   </div>
-                </Router>
-              </>
-            );
-          }}
-        </DrizzleContext.Consumer>
-      </DrizzleContext.Provider>
-    </AppStateProvider>
+                </AppStateProvider>
+              </Router>
+            </>
+          );
+        }}
+      </DrizzleContext.Consumer>
+    </DrizzleContext.Provider>
   );
 };
 

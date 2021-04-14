@@ -51,7 +51,8 @@ export default ({ drizzle, drizzleState, indexCandidate }) => {
         'getProposalsByCandidate'
       ].cacheCall(...methodArgs)
     );
-  }, [dataKey, contracts, methodArgs]);
+    // eslint-disable-next-line
+  }, [dataKey]);
 
   if (!(dataKey in proposalsInfo)) {
     return <span>Fetching...</span>;
@@ -62,19 +63,25 @@ export default ({ drizzle, drizzleState, indexCandidate }) => {
       <div className="section">
         <Grid container spacing={2}>
           <Grid>
-            <h2>Propuestas del candidato</h2>
-            <List style={{ maxHeight: 500, overflow: 'auto' }}>
-              {proposals.map((proposalInfo, i) => (
-                <Proposal
-                  proposalInfo={proposalInfo}
-                  key={i}
-                  handleOpen={() => {
-                    setOpen(true);
-                    setCurrentProposal(proposalInfo);
-                  }}
-                />
-              ))}
-            </List>
+            {proposals.length > 0 ? (
+              <>
+                <h2>Propuestas del candidato</h2>
+                <List style={{ maxHeight: 500, overflow: 'auto' }}>
+                  {proposals.map((proposalInfo, i) => (
+                    <Proposal
+                      proposalInfo={proposalInfo}
+                      key={i}
+                      handleOpen={() => {
+                        setOpen(true);
+                        setCurrentProposal(proposalInfo);
+                      }}
+                    />
+                  ))}
+                </List>
+              </>
+            ) : (
+              <h2>Sin propuestas por el momento</h2>
+            )}
           </Grid>
         </Grid>
       </div>

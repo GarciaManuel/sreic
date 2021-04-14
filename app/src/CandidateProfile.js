@@ -69,7 +69,8 @@ export default ({ drizzle, drizzleState }) => {
         ...methodArgs
       )
     );
-  }, [dataKey, contracts, methodArgs]);
+    // eslint-disable-next-line
+  }, [dataKey, methodArgs]);
 
   if (!(dataKey in candidateInfo)) {
     return <span>Fetching...</span>;

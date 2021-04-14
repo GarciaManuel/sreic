@@ -85,7 +85,9 @@ export default ({ drizzle, drizzleState }) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-
+  const [isHandler, setIsHandler] = React.useState(false);
+  const mainAccount = drizzleState.accounts[0];
+  const contractMethods = drizzle.contracts.ProposalContract.methods;
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
@@ -174,7 +176,14 @@ export default ({ drizzle, drizzleState }) => {
       </MenuItem>
     </Menu>
   );
-
+  React.useEffect(() => {
+    const isAdmin = async () => {
+      const handler = await contractMethods.isHandler(mainAccount).call();
+      if (handler === true) return setIsHandler(true);
+      return setIsHandler(false);
+    };
+    isAdmin();
+  }, [contractMethods, mainAccount]);
   return (
     <div className={classes.grow}>
       <AppBar position="static">
@@ -187,13 +196,25 @@ export default ({ drizzle, drizzleState }) => {
           >
             <MenuIcon />
           </IconButton>
-          <Link to={'/'} style={{ color: 'white', 'text-decoration': 'none' }}>
+          <Link to={'/'} style={{ color: 'white', textDecoration: 'none' }}>
             <Typography className={classes.title} variant="h6" noWrap>
               SREIC
             </Typography>
           </Link>
 
           <div className={classes.grow} />
+          {isHandler ? (
+            <Link
+              to={'/admin'}
+              style={{ color: 'white', textDecoration: 'none' }}
+            >
+              <Typography className={classes.title} variant="h6" noWrap>
+                Admin
+              </Typography>
+            </Link>
+          ) : (
+            ''
+          )}
           <div className={classes.sectionDesktop}>
             <IconButton
               edge="end"

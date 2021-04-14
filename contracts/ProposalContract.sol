@@ -45,19 +45,49 @@ contract ProposalContract {
 
     mapping(uint => mapping(address => bool)) proposalsVoters;
 
+    mapping(address => bool) voters;
+    
+    address private owner;
+
+
     event LogNewCandidate(address indexed candidate, uint index, string name);
     event LogNewProposal(address indexed candidate, uint index, string name, string document_hash);
     event LogNewVote(address indexed candidate, uint index, string name, int256 reputation);
-
+    event OwnerSet(address indexed oldOwner, address indexed newOwner);
+    
+    modifier isOwner() {
+        // If the first argument of 'require' evaluates to 'false', execution terminates and all
+        // changes to the state and to Ether balances are reverted.
+        // This used to consume all gas in old EVM versions, but not anymore.
+        // It is often a good idea to use 'require' to check if functions are called correctly.
+        // As a second argument, you can also provide an explanation about what went wrong.
+        require(msg.sender == owner, "Caller is not owner");
+        _;
+    }
     constructor() public{
-        createCandidate(0xA6174d009FB4518B34e75B548543F7BD1a1cF031, "Abigail Arredondo", Parties.PRI, "2021", "arredondo@pri.mx", 3);
+        owner = msg.sender; // 'msg.sender' is sender of current call, contract deployer for a constructor
+        createCandidate(0xFfDb48566aC7f37C965ba6247534cD3eB6F81522, "Abigail Arredondo", Parties.PRI, "2021", "arredondo@pri.mx", 3);
         createCandidate(0x1cB2AC85653179655C420e8a923c50bE467F6035, "Mauricio Kuri", Parties.PAN, "2021", "kuri@pan.mx", 3);
         createCandidate(0x064B09b4Cecd636A839f773C1f6308bA023F0e05, "Raquel Ruiz de Santiago", Parties.PRD, "2021", "raquelruiz@prd.mx", 3);
+        address[] memory vtrs = new address[](3);
+        vtrs[0] = 0xe2089dC97fbd59456B3DB358c72ca537C5575565;
+        vtrs[1] = 0x81602b40436804eff1dCb92D20FEFCfa326fb757;
+        vtrs[2] = 0x24BF7B4AD87794Ff5FB987aF9E3A6aaf8dd87d95;
+        defineVoters(vtrs);
+        emit OwnerSet(address(0), owner);
+
     } 
 
     function isCandidate(address userAddress) public view returns(bool isIndeed){
         if(allCandidatesIndex.length == 0) return false;
         return (allCandidatesIndex[allCandidates[userAddress].index] == userAddress);
+    }
+    function isHandler(address userAddress) public view returns(bool isIndeed){
+        return (owner == userAddress);
+    }
+
+    function isVoter(address userAddress) public view returns(bool isIndeed){
+        return (voters[userAddress]);
     }
 
     function isProposal(uint proposalIndex) public view returns(bool isIndeed) {
@@ -88,7 +118,7 @@ contract ProposalContract {
         emit LogNewProposal(userAddress, index, allProposals[index].name, allProposals[index].document_hash);
         return index;
     }
-    function createCandidate(address userAddress, string memory _name, Parties _party, string memory _starting_period, string memory _email, int256 _district) public returns(uint newIndex){
+    function createCandidate(address userAddress, string memory _name, Parties _party, string memory _starting_period, string memory _email, int256 _district) public isOwner returns(uint newIndex){
         require(!isCandidate(userAddress));
         allCandidates[userAddress].name = _name;
         allCandidates[userAddress].party = _party;
@@ -102,8 +132,17 @@ contract ProposalContract {
         return  allCandidates[userAddress].index;
     }
 
+    function defineVoters(address[] memory usersAddresses) public isOwner returns(bool sucess){
+        require(usersAddresses.length>0);
+        for (uint256 index = 0; index < usersAddresses.length; index++) {
+            voters[usersAddresses[index]] = true;
+        }
+        return true;
+    }
+
     function voteProposal(uint proposalIndex, int256 _vote) public returns(bool success){
         require(isProposal(proposalIndex));
+        require(isVoter(msg.sender));
         require(!proposalsVoters[proposalIndex][msg.sender]);
         proposalsVoters[proposalIndex][msg.sender]= true;
         allProposals[proposalIndex].votes += 1;
