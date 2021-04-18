@@ -109,7 +109,7 @@ export default ({ drizzle, drizzleState }) => {
                     {candidate.name}
                   </Typography>
                   <Typography variant="body1" component="h5">
-                    Reputación : {candidate.reputation}
+                    Distrito : {candidate.district}
                   </Typography>
                   <Typography
                     variant="body2"
@@ -118,21 +118,31 @@ export default ({ drizzle, drizzleState }) => {
                   >
                     Candidato por el partido
                     {politicalParties[candidate.party]} , desde el periodo{' '}
-                    {candidate.starting_period}. Contacto en
+                    {candidate.starting_period}. Contacto en:
                   </Typography>
                 </CardContent>
               </CardActionArea>
               <CardActions>
-                <Button variant="outlined">{candidate.email}</Button>
-                <Button
-                  variant="contained"
-                  disableElevation
-                  size="small"
-                  color="primary"
-                  onClick={updateCandidateRep}
-                >
-                  Actualizar reputación
-                </Button>
+                <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    {' '}
+                    <Button variant="outlined" fullWidth={true}>
+                      {candidate.email}
+                    </Button>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Button
+                      variant="contained"
+                      disableElevation
+                      size="small"
+                      color="primary"
+                      onClick={updateCandidateRep}
+                      fullWidth={true}
+                    >
+                      Actualizar reputación
+                    </Button>
+                  </Grid>
+                </Grid>
               </CardActions>
             </Card>
           </Grid>

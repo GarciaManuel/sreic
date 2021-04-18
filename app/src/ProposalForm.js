@@ -8,6 +8,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Alert,
   TextareaAutosize,
 } from '@material-ui/core';
 import { useState } from 'react';
@@ -26,6 +27,11 @@ export default ({ drizzle, drizzleState }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [period, setPeriod] = useState('');
+  const [touched, setTouched] = useState({
+    name: false,
+    description: false,
+    period: false,
+  });
   const { handleSubmit } = useForm();
   const contractMethods = drizzle.contracts.ProposalContract.methods;
 
@@ -66,14 +72,21 @@ export default ({ drizzle, drizzleState }) => {
         });
     } catch (error) {
       SetNotification('error');
-      SetMessage(
-        'Hubo un error durante la ejecución del contrato en la red, intenta más tarde.'
-      );
+      SetMessage('Favor de llenar correctamente todos los campos.');
+      setTouched({
+        name: true,
+        description: true,
+        period: true,
+      });
       console.log('error');
     }
   };
 
   const changeDescription = (event) => {
+    setTouched((touched) => ({
+      ...touched,
+      description: true,
+    }));
     setDescription(event.target.value);
   };
   return (
@@ -85,7 +98,10 @@ export default ({ drizzle, drizzleState }) => {
           <FormLabel sx={{ mb: 3 }}>
             Presenta tu idea para que la ciudadanía comparta su opinión.
           </FormLabel>
-
+          <Alert severity="info" sx={{ mb: 3 }}>
+            El documento de respaldo de la propuesta debe cumplir con el formato
+            indicado.
+          </Alert>
           <TextField
             sx={{ mb: 2 }}
             label="Nombre de la propuesta"
@@ -94,9 +110,14 @@ export default ({ drizzle, drizzleState }) => {
             type="text"
             value={name}
             onChange={(event) => {
+              setTouched((touched) => ({
+                ...touched,
+                name: true,
+              }));
               setName(event.target.value);
+              console.log(touched, name);
             }}
-            error={name.length === 0 ? true : false}
+            error={name === '' && touched['name'] ? true : false}
             helperText={name.length === 0 ? 'Agrega un nombre' : ''}
           />
           <TextareaAutosize
@@ -117,10 +138,18 @@ export default ({ drizzle, drizzleState }) => {
               id="period"
               value={period}
               onChange={(event) => {
+                setTouched((touched) => ({
+                  ...touched,
+                  period: true,
+                }));
                 setPeriod(event.target.value);
               }}
               label="Periodo"
-              error={period < 2000 || period > 2022 ? true : false}
+              error={
+                (period < 2000 || period > 2022) && touched['period']
+                  ? true
+                  : false
+              }
             >
               {[...Array(12)].map((val, i) => (
                 <MenuItem value={2000 + 2 * i} key={i}>

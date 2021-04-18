@@ -18,6 +18,7 @@ contract ProposalContract {
         string description;
         string period;
         string document_hash;
+        uint256 district;
         int256 reputation;
         int256 positive;
         int256 neutral;
@@ -31,7 +32,7 @@ contract ProposalContract {
         Parties party;
         string starting_period;
         string email;
-        int256 district;
+        uint256 district;
         int256 reputation;
         uint[] proposalsIndex;
         uint index;
@@ -45,13 +46,13 @@ contract ProposalContract {
 
     mapping(uint => mapping(address => bool)) proposalsVoters;
 
-    mapping(address => bool) voters;
+    mapping(address => uint) votersDistricts;
     
     address private owner;
 
 
     event LogNewCandidate(address indexed candidate, uint index, string name);
-    event LogNewProposal(address indexed candidate, uint index, string name, string document_hash);
+    event LogNewProposal(address indexed candidate, uint index, string name, string document_hash, uint256 district);
     event LogNewVote(address indexed candidate, uint index, string name, int256 reputation);
     event OwnerSet(address indexed oldOwner, address indexed newOwner);
     
@@ -73,7 +74,11 @@ contract ProposalContract {
         vtrs[0] = 0xe2089dC97fbd59456B3DB358c72ca537C5575565;
         vtrs[1] = 0x81602b40436804eff1dCb92D20FEFCfa326fb757;
         vtrs[2] = 0x24BF7B4AD87794Ff5FB987aF9E3A6aaf8dd87d95;
-        defineVoters(vtrs);
+        uint256[] memory dst = new uint256[](3);
+        dst[0] = 3;
+        dst[1] = 3;
+        dst[2] = 1;
+        defineVoters(vtrs, dst);
         emit OwnerSet(address(0), owner);
 
     } 
@@ -86,8 +91,8 @@ contract ProposalContract {
         return (owner == userAddress);
     }
 
-    function isVoter(address userAddress) public view returns(bool isIndeed){
-        return (voters[userAddress]);
+    function isVoter(address userAddress) public view returns(uint district){
+        return (votersDistricts[userAddress]);
     }
 
     function isProposal(uint proposalIndex) public view returns(bool isIndeed) {
@@ -95,7 +100,7 @@ contract ProposalContract {
         return (allProposalsIndex[allProposals[proposalIndex].index] == proposalIndex);
     }
 
-    function createProposal(string memory _name, string memory _description, string memory _period, string memory _document_hash) public returns (uint newIndex){
+    function createProposal(string memory _name, string memory _description, string memory _period, string memory _document_hash, uint256 _district) public returns (uint newIndex){
         address userAddress = msg.sender;
         require(isCandidate(userAddress));
         uint index = allProposalsIndex.length;
@@ -105,6 +110,7 @@ contract ProposalContract {
         allProposals[index].description = _description;
         allProposals[index].period = _period;
         allProposals[index].document_hash = _document_hash;
+        allProposals[index].district = _district;
         allProposals[index].reputation = 0;
         allProposals[index].positive = 0;
         allProposals[index].negative = 0;
@@ -115,10 +121,10 @@ contract ProposalContract {
         proposalsVoters[index][userAddress] = true;
 
 
-        emit LogNewProposal(userAddress, index, allProposals[index].name, allProposals[index].document_hash);
+        emit LogNewProposal(userAddress, index, allProposals[index].name, allProposals[index].document_hash, allProposals[index].district);
         return index;
     }
-    function createCandidate(address userAddress, string memory _name, Parties _party, string memory _starting_period, string memory _email, int256 _district) public isOwner returns(uint newIndex){
+    function createCandidate(address userAddress, string memory _name, Parties _party, string memory _starting_period, string memory _email, uint256 _district) public isOwner returns(uint newIndex){
         require(!isCandidate(userAddress));
         allCandidates[userAddress].name = _name;
         allCandidates[userAddress].party = _party;
@@ -132,18 +138,21 @@ contract ProposalContract {
         return  allCandidates[userAddress].index;
     }
 
-    function defineVoters(address[] memory usersAddresses) public isOwner returns(bool sucess){
+    function defineVoters(address[] memory usersAddresses, uint256[] memory usersDistricts) public isOwner returns(bool sucess){
         require(usersAddresses.length>0);
         for (uint256 index = 0; index < usersAddresses.length; index++) {
-            voters[usersAddresses[index]] = true;
+            votersDistricts[usersAddresses[index]] = usersDistricts[index];
         }
         return true;
     }
 
     function voteProposal(uint proposalIndex, int256 _vote) public returns(bool success){
         require(isProposal(proposalIndex));
-        require(isVoter(msg.sender));
+        require(isVoter(msg.sender)!= 0);
         require(!proposalsVoters[proposalIndex][msg.sender]);
+        if(allProposals[proposalIndex].district != 0)
+            require(isVoter(msg.sender) == allProposals[proposalIndex].district);
+
         proposalsVoters[proposalIndex][msg.sender]= true;
         allProposals[proposalIndex].votes += 1;
         
@@ -167,7 +176,7 @@ contract ProposalContract {
         );
     }
 
-    function getCandidate(address userAddress) public view returns (address candidate, string memory name, Parties party, string memory starting_period, string memory email, int256 district, int256 reputation, uint[]  memory proposalsIndex){
+    function getCandidate(address userAddress) public view returns (address candidate, string memory name, Parties party, string memory starting_period, string memory email, uint256 district, int256 reputation, uint[]  memory proposalsIndex){
         require(!isCandidate(userAddress));
         Candidate memory person = allCandidates[userAddress];
         
@@ -184,7 +193,7 @@ contract ProposalContract {
 
     }
 
-    function getCandidateByIndex(uint index) public view returns (address candidate, string memory name, Parties party, string memory starting_period, string memory email, int256 district, int256 reputation, uint[]  memory proposalsIndex){
+    function getCandidateByIndex(uint index) public view returns (address candidate, string memory name, Parties party, string memory starting_period, string memory email, uint256 district, int256 reputation, uint[]  memory proposalsIndex){
         require(index>= 0 && index < allCandidatesIndex.length);
         address userAddress = allCandidatesIndex[index];
         Candidate memory person = allCandidates[userAddress];

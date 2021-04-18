@@ -4,6 +4,7 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Button from '@material-ui/core/Button';
+import Alert from '@material-ui/core/Alert';
 import { AppStateContext } from './AppStateProvider';
 
 export default ({ drizzle, drizzleState, proposalIndex, handleClose }) => {
@@ -58,7 +59,10 @@ export default ({ drizzle, drizzleState, proposalIndex, handleClose }) => {
       <form onSubmit={handleSubmit}>
         <FormControl component="fieldset" error={error}>
           <h4>Votación para la propuesta: </h4>
-
+          <Alert severity="info">
+            Solo podrás votar a propuesta de candidaturas a distrito 0 y al que
+            fuíste registrado.
+          </Alert>
           <RadioGroup
             aria-label="voting"
             name="voting"

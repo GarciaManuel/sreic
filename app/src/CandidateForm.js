@@ -16,11 +16,19 @@ import { useForm } from 'react-hook-form';
 export default ({ drizzle, drizzleState }) => {
   const { SetNotification, SetMessage } = React.useContext(AppStateContext);
   const [canAddress, setCanAddress] = useState('');
-  const [district, setDistrict] = useState(undefined);
+  const [district, setDistrict] = useState(-1);
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [party, setParty] = useState(undefined);
   const [period, setPeriod] = useState(undefined);
+  const [touched, setTouched] = useState({
+    name: false,
+    canAddress: false,
+    district: false,
+    email: false,
+    party: false,
+    period: false,
+  });
   const { handleSubmit } = useForm();
   const contractMethods = drizzle.contracts.ProposalContract.methods;
 
@@ -41,7 +49,7 @@ export default ({ drizzle, drizzleState }) => {
           SetMessage('El candidato se ha registrado correctamente.');
 
           setCanAddress('');
-          setDistrict(undefined);
+          setDistrict(-1);
           setEmail('');
           setName('');
           setParty(undefined);
@@ -58,10 +66,16 @@ export default ({ drizzle, drizzleState }) => {
         });
     } catch (error) {
       SetNotification('error');
-      SetMessage(
-        'Hubo un error durante la ejecución del contrato en la red, intenta más tarde.'
-      );
+      SetMessage('Favor de llenar correctamente todos los campos.');
       console.log('error');
+      setTouched({
+        name: true,
+        canAddress: true,
+        district: true,
+        email: true,
+        party: true,
+        period: true,
+      });
     }
   };
 
@@ -88,13 +102,21 @@ export default ({ drizzle, drizzleState }) => {
             type="text"
             value={canAddress}
             onChange={(event) => {
+              setTouched((touched) => ({
+                ...touched,
+                canAddress: true,
+              }));
               setCanAddress(event.target.value);
             }}
             error={
-              canAddress.length === 0 || canAddress === undefined ? true : false
+              (canAddress.length === 0 || canAddress === undefined) &&
+              touched['canAddress']
+                ? true
+                : false
             }
             helperText={
-              canAddress.length === 0 || canAddress === undefined
+              (canAddress.length === 0 || canAddress === undefined) &&
+              touched['canAddress']
                 ? 'Agrega una direccion de wallet'
                 : ''
             }
@@ -107,11 +129,21 @@ export default ({ drizzle, drizzleState }) => {
             type="text"
             value={name}
             onChange={(event) => {
+              setTouched((touched) => ({
+                ...touched,
+                name: true,
+              }));
               setName(event.target.value);
             }}
-            error={name.length === 0 || name === undefined ? true : false}
+            error={
+              (name.length === 0 || name === undefined) && touched['name']
+                ? true
+                : false
+            }
             helperText={
-              name.length === 0 || name === undefined ? 'Agrega un nombre' : ''
+              (name.length === 0 || name === undefined) && touched['name']
+                ? 'Agrega un nombre'
+                : ''
             }
           />
 
@@ -123,11 +155,21 @@ export default ({ drizzle, drizzleState }) => {
             type="text"
             value={email}
             onChange={(event) => {
+              setTouched((touched) => ({
+                ...touched,
+                email: true,
+              }));
               setEmail(event.target.value);
             }}
-            error={email.length === 0 || email === undefined ? true : false}
+            error={
+              (email.length === 0 || email === undefined) && touched['email']
+                ? true
+                : false
+            }
             helperText={
-              email.length === 0 || email === undefined ? 'Agrega un email' : ''
+              (email.length === 0 || email === undefined) && touched['email']
+                ? 'Agrega un email'
+                : ''
             }
           />
           <Grid container spacing={2}>
@@ -139,11 +181,16 @@ export default ({ drizzle, drizzleState }) => {
                   id="period"
                   value={period}
                   onChange={(event) => {
+                    setTouched((touched) => ({
+                      ...touched,
+                      period: true,
+                    }));
                     setPeriod(event.target.value);
                   }}
                   label="Periodo"
                   error={
-                    period < 2000 || period > 2022 || period === undefined
+                    (period < 2000 || period > 2022 || period === undefined) &&
+                    touched['period']
                       ? true
                       : false
                   }
@@ -164,15 +211,23 @@ export default ({ drizzle, drizzleState }) => {
                   id="district"
                   value={district}
                   onChange={(event) => {
+                    setTouched((touched) => ({
+                      ...touched,
+                      district: true,
+                    }));
                     setDistrict(event.target.value);
                   }}
                   label="Distrito"
                   error={
-                    district < 0 || district > 20 || district === undefined
+                    (district < 0 || district > 20 || district === undefined) &&
+                    touched['district']
                       ? true
                       : false
                   }
                 >
+                  <MenuItem value={-1} key={-1}>
+                    Selecciona un distrito
+                  </MenuItem>
                   {[...Array(20)].map((val, i) => (
                     <MenuItem value={i} key={i}>
                       {i}
@@ -192,11 +247,17 @@ export default ({ drizzle, drizzleState }) => {
               id="party"
               value={politicalParties[party]}
               onChange={(event) => {
+                setTouched((touched) => ({
+                  ...touched,
+                  party: true,
+                }));
                 setParty(event.target.value);
               }}
               label="Partido"
               error={
-                politicalParties[party] === undefined || party === undefined
+                (politicalParties[party] === undefined ||
+                  party === undefined) &&
+                touched['party']
                   ? true
                   : false
               }

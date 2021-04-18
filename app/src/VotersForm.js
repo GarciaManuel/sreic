@@ -8,6 +8,9 @@ import {
   List,
   Divider,
   ListItemText,
+  InputLabel,
+  Select,
+  MenuItem,
   Grid,
 } from '@material-ui/core';
 import { useState } from 'react';
@@ -16,26 +19,48 @@ import { useForm } from 'react-hook-form';
 export default ({ drizzle, drizzleState }) => {
   const { SetNotification, SetMessage } = React.useContext(AppStateContext);
   const [votersAddresses, setVotersAddresses] = useState([]);
+  const [votersDistricts, setVotersDistricts] = useState([]);
   const [voterAddress, setVoterAddress] = useState('');
-
+  const [voterDistrict, setVoterDistrict] = useState(-1);
+  const [touched, setTouched] = useState({
+    voterAddress: false,
+    voterDistrict: false,
+  });
   const { handleSubmit } = useForm();
   const contractMethods = drizzle.contracts.ProposalContract.methods;
 
-  const addVoterAddress = (voterAddr) => {
-    if (voterAddr !== '') setVotersAddresses([...votersAddresses, voterAddr]);
+  const addVoterAddress = (voterAddr, voterDist) => {
+    if (voterAddr !== '' && voterDist !== -1) {
+      setVotersAddresses([...votersAddresses, voterAddr]);
+      setVotersDistricts([...votersDistricts, voterDist]);
+      setTouched((touched) => ({
+        voterAddress: false,
+        voterDistrict: false,
+      }));
+    } else {
+      SetNotification('error');
+      SetMessage(
+        'Favor de rellenar los campos correctamente para agregar el votante'
+      );
+      setTouched({
+        voterAddress: true,
+        voterDistrict: true,
+      });
+    }
   };
 
   const onSubmit = async () => {
     try {
       contractMethods
-        .defineVoters(votersAddresses)
+        .defineVoters(votersAddresses, votersDistricts)
         .send()
         .then(() => {
           SetNotification('success');
           SetMessage('Los votantes se ha registrado correctamente.');
-
           setVotersAddresses([]);
+          setVotersDistricts([]);
           setVoterAddress('');
+          setVoterDistrict(-1);
         })
         .catch(function (error) {
           if (error.code === -32603) {
@@ -73,23 +98,67 @@ export default ({ drizzle, drizzleState }) => {
               type="text"
               value={voterAddress}
               onChange={(event) => {
+                setTouched((touched) => ({
+                  ...touched,
+                  voterAddress: true,
+                }));
                 setVoterAddress(event.target.value);
               }}
               error={
-                voterAddress.length === 0 || voterAddress === '' ? true : false
+                (voterAddress.length === 0 || voterAddress === '') &&
+                touched['voterAddress']
+                  ? true
+                  : false
               }
               helperText={
-                voterAddress.length === 0 || voterAddress === ''
+                (voterAddress.length === 0 || voterAddress === '') &&
+                touched['voterAddress']
                   ? 'Agrega una direccion de wallet'
                   : ''
               }
             />
+
+            <FormControl variant="outlined" fullWidth={true}>
+              <InputLabel id="districtlabel">Distrito</InputLabel>
+              <Select
+                labelId="districtlabel"
+                id="district"
+                value={voterDistrict}
+                onChange={(event) => {
+                  setTouched((touched) => ({
+                    ...touched,
+                    voterDistrict: true,
+                  }));
+                  setVoterDistrict(event.target.value);
+                }}
+                label="Distrito"
+                error={
+                  (voterDistrict < 1 ||
+                    voterDistrict > 20 ||
+                    voterDistrict === undefined) &&
+                  touched['voterDistrict']
+                    ? true
+                    : false
+                }
+              >
+                <MenuItem value={-1} key={-1}>
+                  Selecciona un distrito
+                </MenuItem>
+                {[...Array(19)].map((val, i) => (
+                  <MenuItem value={i + 1} key={i + 1}>
+                    {i + 1}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
             <Button
               sx={{ mt: 1, mr: 1 }}
               variant="outlined"
               onClick={() => {
-                addVoterAddress(voterAddress);
+                addVoterAddress(voterAddress, voterDistrict);
                 setVoterAddress('');
+                setVoterDistrict(-1);
               }}
             >
               Agregar
@@ -117,7 +186,13 @@ export default ({ drizzle, drizzleState }) => {
                   {votersAddresses.map((voterAddr, i) => (
                     <div key={i}>
                       <Divider variant="inset" component="li" />
-                      <ListItemText primary={voterAddr}></ListItemText>
+                      <ListItemText
+                        primary={
+                          <React.Fragment>
+                            {voterAddr} - {votersDistricts[i]}
+                          </React.Fragment>
+                        }
+                      ></ListItemText>
                     </div>
                   ))}
                 </List>
