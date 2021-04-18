@@ -33,7 +33,7 @@ export default ({ candidateInfo }) => {
                   variant="body2"
                   color="textPrimary"
                 >
-                  Reputación : {candidateInfo.reputation}
+                  Distrito : {candidateInfo.district}
                 </Typography>
                 {'   -    Candidat@ para el partido ' +
                   politicalParties[candidateInfo.party] +

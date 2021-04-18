@@ -178,9 +178,13 @@ export default ({ drizzle, drizzleState }) => {
   );
   React.useEffect(() => {
     const isAdmin = async () => {
-      const handler = await contractMethods.isHandler(mainAccount).call();
-      if (handler === true) return setIsHandler(true);
-      return setIsHandler(false);
+      try {
+        const handler = await contractMethods.isHandler(mainAccount).call();
+        if (handler === true) return setIsHandler(true);
+        return setIsHandler(false);
+      } catch {
+        return setIsHandler(false);
+      }
     };
     isAdmin();
   }, [contractMethods, mainAccount]);

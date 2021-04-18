@@ -14,9 +14,13 @@ export default ({ drizzle, drizzleState }) => {
 
   useEffect(() => {
     const canPropose = async () => {
-      const owner = await contractMethods.isCandidate(mainAccount).call();
-      if (owner === true) return setIsCandidate(true);
-      return setIsCandidate(false);
+      try {
+        const owner = await contractMethods.isCandidate(mainAccount).call();
+        if (owner === true) return setIsCandidate(true);
+        return setIsCandidate(false);
+      } catch {
+        return setIsCandidate(false);
+      }
     };
     canPropose();
   }, [contractMethods, mainAccount]);
