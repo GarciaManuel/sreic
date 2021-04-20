@@ -51,6 +51,12 @@ const headCells = [
     disablePadding: true,
     label: 'Numero de wallet',
   },
+  {
+    id: 'electionKey',
+    numeric: false,
+    disablePadding: false,
+    label: 'Clave electoral',
+  },
   { id: 'district', numeric: true, disablePadding: false, label: 'Distrito' },
 ];
 
@@ -260,6 +266,7 @@ export default ({ rows, deleteFunction }) => {
   const emptyRows =
     rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
+  console.log(rows);
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
@@ -316,6 +323,7 @@ export default ({ rows, deleteFunction }) => {
                       >
                         {row.walletNumber}
                       </TableCell>
+                      <TableCell align="right">{row.electionKey}</TableCell>
                       <TableCell align="right">{row.district}</TableCell>
                     </TableRow>
                   );

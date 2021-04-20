@@ -17,6 +17,7 @@ module.exports = {
     development: {
       host: 'localhost',
       port: 7545,
+      gas: 5500000,
       network_id: '5777',
     },
     ropsten: {

@@ -28,7 +28,8 @@ export default ({ drizzle, drizzleState }) => {
     // eslint-disable-next-line
   }, [contractMethods]);
 
-  var candidatesInfo = drizzleState.contracts.ProposalContract.getAllCandidates;
+  var candidatesInfo =
+    drizzleState.contracts.ProposalContract.getAllActiveCandidates;
   useEffect(() => {
     const getCandidates = () => {
       if ('0x0' in candidatesInfo) setCandidates(candidatesInfo['0x0'].value);
@@ -44,7 +45,7 @@ export default ({ drizzle, drizzleState }) => {
             drizzle={drizzle}
             drizzleState={drizzleState}
             contract="ProposalContract"
-            method="getAllCandidates"
+            method="getAllActiveCandidates"
           />
         </ListItem>
       </div>
@@ -53,7 +54,7 @@ export default ({ drizzle, drizzleState }) => {
         <Grid container spacing={2}>
           <Grid item xs={6}>
             <h2>Candidatos en contienda</h2>
-            <List style={{ maxHeight: 500, overflow: 'auto' }}>
+            <List style={{ maxHeight: 700, overflow: 'auto' }}>
               {candidates.map((candidateInfo, i) => (
                 <Candidate candidateInfo={candidateInfo} key={i} />
               ))}

@@ -13,10 +13,13 @@ import {
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import politicalParties from './PoliticalParties';
+const validator = require('email-validator');
+const WAValidator = require('wallet-address-validator');
 
 export default ({ drizzle, drizzleState }) => {
   const { SetNotification, SetMessage } = React.useContext(AppStateContext);
   const [canAddress, setCanAddress] = useState('');
+  const [canKey, setCanKey] = useState('');
   const [district, setDistrict] = useState(-1);
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
@@ -29,12 +32,20 @@ export default ({ drizzle, drizzleState }) => {
     email: false,
     party: false,
     period: false,
+    canKey: false,
   });
   const { handleSubmit } = useForm();
   const contractMethods = drizzle.contracts.ProposalContract.methods;
 
   const onSubmit = async () => {
     try {
+      if (
+        !validator.validate(email) ||
+        !WAValidator.validate(canAddress, 'ETH') ||
+        canKey.length !== 18
+      )
+        throw new Error('Wrong inputs');
+
       contractMethods
         .createCandidate(
           canAddress,
@@ -42,7 +53,8 @@ export default ({ drizzle, drizzleState }) => {
           party,
           String(period),
           email,
-          district
+          district,
+          canKey
         )
         .send()
         .then(() => {
@@ -50,6 +62,7 @@ export default ({ drizzle, drizzleState }) => {
           SetMessage('El candidato se ha registrado correctamente.');
 
           setCanAddress('');
+          setCanKey('');
           setDistrict(-1);
           setEmail('');
           setName('');
@@ -59,7 +72,9 @@ export default ({ drizzle, drizzleState }) => {
         .catch(function (error) {
           if (error.code === -32603) {
             SetNotification('error');
-            SetMessage('Ocurrio un error inesperado' + String(error));
+            SetMessage(
+              'La dirección del wallet y/o la clave electoral ya fueron regsitradas, corrobra tu información.'
+            );
           } else {
             SetNotification('warning');
             SetMessage('Has cancelado tu registro de candidato.');
@@ -76,6 +91,7 @@ export default ({ drizzle, drizzleState }) => {
         email: true,
         party: true,
         period: true,
+        canKey: true,
       });
     }
   };
@@ -104,14 +120,49 @@ export default ({ drizzle, drizzleState }) => {
               setCanAddress(event.target.value);
             }}
             error={
-              (canAddress.length === 0 || canAddress === undefined) &&
+              (canAddress.length === 0 ||
+                canAddress === undefined ||
+                !WAValidator.validate(canAddress, 'ETH')) &&
               touched['canAddress']
                 ? true
                 : false
             }
             helperText={
-              (canAddress.length === 0 || canAddress === undefined) &&
+              (canAddress.length === 0 ||
+                canAddress === undefined ||
+                !WAValidator.validate(canAddress, 'ETH')) &&
               touched['canAddress']
+                ? 'Agrega una direccion de wallet'
+                : ''
+            }
+          />
+          <TextField
+            sx={{ mb: 2 }}
+            label="Clave de elector"
+            id="canKey"
+            name="canKey"
+            type="text"
+            value={canKey}
+            onChange={(event) => {
+              setTouched((touched) => ({
+                ...touched,
+                canKey: true,
+              }));
+              setCanKey(event.target.value.toUpperCase());
+            }}
+            error={
+              (canKey.length === 0 ||
+                canKey === undefined ||
+                canKey.length !== 18) &&
+              touched['canKey']
+                ? true
+                : false
+            }
+            helperText={
+              (canKey.length === 0 ||
+                canKey === undefined ||
+                canKey.length !== 18) &&
+              touched['canKey']
                 ? 'Agrega una direccion de wallet'
                 : ''
             }
@@ -157,12 +208,18 @@ export default ({ drizzle, drizzleState }) => {
               setEmail(event.target.value);
             }}
             error={
-              (email.length === 0 || email === undefined) && touched['email']
+              (email.length === 0 ||
+                email === undefined ||
+                !validator.validate(email)) &&
+              touched['email']
                 ? true
                 : false
             }
             helperText={
-              (email.length === 0 || email === undefined) && touched['email']
+              (email.length === 0 ||
+                email === undefined ||
+                !validator.validate(email)) &&
+              touched['email']
                 ? 'Agrega un email'
                 : ''
             }

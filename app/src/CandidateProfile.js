@@ -78,65 +78,71 @@ export default ({ drizzle, drizzleState }) => {
     return <CircularProgress />;
   }
   var candidate = candidateInfo[dataKey].value;
-
+  if (candidate === null) {
+    return <p>Candidato inexistente</p>;
+  }
   return (
     <>
-      <div className="section">
-        <Grid container spacing={2}>
-          <Grid
-            item
-            xs={6}
-            container
-            spacing={0}
-            direction="column"
-            alignItems="center"
-            justify="center"
-          >
-            <Card className={classes.root}>
-              <CardActionArea>
-                <CardMedia
-                  component="img"
-                  alt={`Partido ${politicalParties[candidate.party]}`}
-                  src={`/images/politicalParties/${
-                    politicalParties[candidate.party]
-                  }.png`}
-                  title={`Partido ${candidate.party}`}
-                />
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="h2">
-                    {candidate.name}
-                  </Typography>
-                  <Typography variant="body1" component="h5">
-                    Distrito : {candidate.district}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="textSecondary"
-                    component="p"
-                  >
-                    Candidato por el partido {politicalParties[candidate.party]}{' '}
-                    , desde el periodo {candidate.starting_period}. Contacto en:
-                  </Typography>
-                </CardContent>
-              </CardActionArea>
-              <CardActions>
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
-                    {' '}
-                    <Button
-                      variant="contained"
-                      disableElevation
-                      size="small"
-                      color="primary"
-                      fullWidth={true}
-                      onClick={() => {
-                        window.location = 'mailto:' + candidate.email;
-                      }}
+      {!candidate.active ? (
+        <p>Candidato no activo</p>
+      ) : (
+        <div className="section">
+          <Grid container spacing={2}>
+            <Grid
+              item
+              xs={6}
+              container
+              spacing={0}
+              direction="column"
+              alignItems="center"
+              justify="center"
+            >
+              <Card className={classes.root}>
+                <CardActionArea>
+                  <CardMedia
+                    component="img"
+                    alt={`Partido ${politicalParties[candidate.party]}`}
+                    src={`/images/politicalParties/${
+                      politicalParties[candidate.party]
+                    }.png`}
+                    title={`Partido ${candidate.party}`}
+                  />
+                  <CardContent>
+                    <Typography gutterBottom variant="h5" component="h2">
+                      {candidate.name}
+                    </Typography>
+                    <Typography variant="body1" component="h5">
+                      Distrito : {candidate.district}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      component="p"
                     >
-                      {candidate.email}
-                    </Button>
-                  </Grid>
-                  {/* <Grid item xs={12}>
+                      Candidato por el partido{' '}
+                      {politicalParties[candidate.party]} , desde el periodo{' '}
+                      {candidate.starting_period}. Contacto en:
+                    </Typography>
+                  </CardContent>
+                </CardActionArea>
+                <CardActions>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                      {' '}
+                      <Button
+                        variant="contained"
+                        disableElevation
+                        size="small"
+                        color="primary"
+                        fullWidth={true}
+                        onClick={() => {
+                          window.location = 'mailto:' + candidate.email;
+                        }}
+                      >
+                        {candidate.email}
+                      </Button>
+                    </Grid>
+                    {/* <Grid item xs={12}>
                     <Button
                       variant="contained"
                       disableElevation
@@ -148,27 +154,28 @@ export default ({ drizzle, drizzleState }) => {
                       Actualizar reputación
                     </Button>
                   </Grid> */}
-                </Grid>
-              </CardActions>
-            </Card>
+                  </Grid>
+                </CardActions>
+              </Card>
+            </Grid>
+            <Grid
+              item
+              xs={6}
+              container
+              spacing={0}
+              direction="column"
+              alignItems="center"
+              justify="center"
+            >
+              <ProposalsList
+                drizzle={drizzle}
+                drizzleState={drizzleState}
+                indexCandidate={index}
+              />
+            </Grid>
           </Grid>
-          <Grid
-            item
-            xs={6}
-            container
-            spacing={0}
-            direction="column"
-            alignItems="center"
-            justify="center"
-          >
-            <ProposalsList
-              drizzle={drizzle}
-              drizzleState={drizzleState}
-              indexCandidate={index}
-            />
-          </Grid>
-        </Grid>
-      </div>
+        </div>
+      )}
     </>
   );
 };
