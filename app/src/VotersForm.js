@@ -13,6 +13,7 @@ import {
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import VotersTable from './VotersTable';
+var WAValidator = require('wallet-address-validator');
 
 export default ({ drizzle, drizzleState }) => {
   const { SetNotification, SetMessage } = React.useContext(AppStateContext);
@@ -28,7 +29,11 @@ export default ({ drizzle, drizzleState }) => {
   const contractMethods = drizzle.contracts.ProposalContract.methods;
 
   const addVoterAddress = (voterAddr, voterDist) => {
-    if (voterAddr !== '' && voterDist !== -1) {
+    if (
+      voterAddr !== '' &&
+      voterDist !== -1 &&
+      WAValidator.validate(voterAddr, 'ETH')
+    ) {
       votersDict[`${voterAddr}`] = voterDist;
       setTouched({
         voterAddress: false,
@@ -38,7 +43,7 @@ export default ({ drizzle, drizzleState }) => {
     } else {
       SetNotification('error');
       SetMessage(
-        'Favor de rellenar los campos correctamente para agregar el votante'
+        'Favor de rellenar los campos correctamente para agregar el votante y asegurarse que el número de wallet es correcto y pertenece a la divisa de ETH'
       );
       setTouched({
         voterAddress: true,
