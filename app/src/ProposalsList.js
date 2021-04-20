@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { Grid, List, CircularProgress } from '@material-ui/core';
-import Proposal from './Proposal';
+import Proposal from './ActivationCandidate';
 import VoteDialog from './VoteDialog';
 
 export default ({ drizzle, drizzleState, indexCandidate }) => {

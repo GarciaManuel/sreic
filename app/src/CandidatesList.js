@@ -55,9 +55,11 @@ export default ({ drizzle, drizzleState }) => {
           <Grid item xs={6}>
             <h2>Candidatos en contienda</h2>
             <List style={{ maxHeight: 700, overflow: 'auto' }}>
-              {candidates.map((candidateInfo, i) => (
-                <Candidate candidateInfo={candidateInfo} key={i} />
-              ))}
+              {candidates.map((candidateInfo, i) => {
+                if (candidateInfo.active)
+                  return <Candidate candidateInfo={candidateInfo} key={i} />;
+                return <></>;
+              })}
             </List>
           </Grid>
           <Grid

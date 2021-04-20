@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Button, Grid } from '@material-ui/core';
 import VotersForm from './VotersForm';
 import CandidateForm from './CandidateForm';
+import ActivationCandidatesList from './ActivationCandidatesList';
 export default ({ drizzle, drizzleState }) => {
   const [renderForm, setRenderForm] = useState(0);
 
@@ -39,9 +40,17 @@ export default ({ drizzle, drizzleState }) => {
         </Button>
         <Grid container spacing={2} sx={{ mt: 3 }}>
           {renderForm === 1 ? (
-            <Grid item xs={6}>
-              <CandidateForm drizzle={drizzle} drizzleState={drizzleState} />
-            </Grid>
+            <>
+              <Grid item xs={6}>
+                <CandidateForm drizzle={drizzle} drizzleState={drizzleState} />
+              </Grid>
+              <Grid item xs={6}>
+                <ActivationCandidatesList
+                  drizzle={drizzle}
+                  drizzleState={drizzleState}
+                />
+              </Grid>
+            </>
           ) : (
             ''
           )}

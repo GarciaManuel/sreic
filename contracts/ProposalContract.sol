@@ -92,13 +92,14 @@ contract ProposalContract {
         kys[2] = 'grhrmn99090921h200';
 
         defineVoters(vtrs, dst, kys);
+        changeActivenessCandidate(0);
         emit OwnerSet(address(0), owner);
 
     } 
 
     function isCandidate(address userAddress) public view returns(bool isIndeed){
         if(allCandidatesIndex.length == 0) return false;
-        return (allCandidatesIndex[allCandidates[userAddress].index] == userAddress);
+        return (allCandidatesIndex[allCandidates[userAddress].index] == userAddress && allCandidates[userAddress].active);
     }
     function getCandidateDistrict(address userAddress) public view returns(uint256 _district){
         require(isCandidate(userAddress));
@@ -294,6 +295,13 @@ contract ProposalContract {
             cumulative += allProposals[candidate.proposalsIndex[index]].reputation;
         }
         allCandidates[candidateAddress].reputation =  cumulative/(int256(candidate.proposalsIndex.length));
+        return true;
+    }
+
+    function changeActivenessCandidate(uint indexCandidate) public returns(bool updated){
+        require(indexCandidate>= 0 && indexCandidate < allCandidatesIndex.length);
+        address candidateAddress = allCandidatesIndex[indexCandidate];
+        allCandidates[candidateAddress].active = !allCandidates[candidateAddress].active;
         return true;
     }
 }
