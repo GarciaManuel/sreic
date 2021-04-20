@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { Grid, List } from '@material-ui/core';
+import { Grid, List, CircularProgress } from '@material-ui/core';
 import Proposal from './Proposal';
 import VoteDialog from './VoteDialog';
 
@@ -55,7 +55,7 @@ export default ({ drizzle, drizzleState, indexCandidate }) => {
   }, [dataKey]);
 
   if (!(dataKey in proposalsInfo)) {
-    return <span>Fetching...</span>;
+    return <CircularProgress />;
   }
   var proposals = proposalsInfo[dataKey].value;
   return (

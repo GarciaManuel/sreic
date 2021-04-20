@@ -8,14 +8,9 @@ import {
   Typography,
 } from '@material-ui/core';
 import { Link } from 'react-router-dom';
+import politicalParties from './PoliticalParties';
 
 export default ({ candidateInfo }) => {
-  const politicalParties = {
-    0: 'PRI',
-    1: 'PAN',
-    2: 'PRD',
-    3: 'PT',
-  };
   return (
     <>
       <Divider variant="inset" component="li" />

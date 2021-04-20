@@ -11,9 +11,11 @@ import {
   Typography,
   CardActions,
   Button,
+  CircularProgress,
 } from '@material-ui/core';
 import ProposalsList from './ProposalsList';
-import { AppStateContext } from './AppStateProvider';
+// import { AppStateContext } from './AppStateProvider';
+import politicalParties from './PoliticalParties';
 
 const useStyles = makeStyles({
   root: {
@@ -22,7 +24,7 @@ const useStyles = makeStyles({
 });
 
 export default ({ drizzle, drizzleState }) => {
-  const { SetNotification, SetMessage } = React.useContext(AppStateContext);
+  // const { SetNotification, SetMessage } = React.useContext(AppStateContext);
   const { index } = useParams();
   const classes = useStyles();
   const [dataKey, setDataKey] = useState(null);
@@ -31,37 +33,37 @@ export default ({ drizzle, drizzleState }) => {
   var methodArgs = [index];
   var contracts = drizzle.contracts;
 
-  const updateCandidateRep = () => {
-    //updateCandidateReputation;
-    try {
-      drizzle.contracts.ProposalContract.methods
-        .updateCandidateReputation(index)
-        .send()
-        .then(() => {
-          SetNotification('success');
-          SetMessage(
-            'La actualización de la reputación se ha realizado con éxito.'
-          );
-        })
-        .catch(function (error) {
-          if (error.code === -32603) {
-            SetNotification('error');
-            SetMessage(
-              'La actualización de la reputación no pudo ser completada.'
-            );
-          } else {
-            SetNotification('warning');
-            SetMessage('Has cancelado la actualización de la reputación.');
-          }
-        });
-    } catch (error) {
-      SetNotification('error');
-      SetMessage(
-        'Hubo un error durante la actualización de la reputación, intenta más tarde.'
-      );
-      console.log('error');
-    }
-  };
+  // const updateCandidateRep = () => {
+  //   //updateCandidateReputation;
+  //   try {
+  //     drizzle.contracts.ProposalContract.methods
+  //       .updateCandidateReputation(index)
+  //       .send()
+  //       .then(() => {
+  //         SetNotification('success');
+  //         SetMessage(
+  //           'La actualización de la reputación se ha realizado con éxito.'
+  //         );
+  //       })
+  //       .catch(function (error) {
+  //         if (error.code === -32603) {
+  //           SetNotification('error');
+  //           SetMessage(
+  //             'La actualización de la reputación no pudo ser completada.'
+  //           );
+  //         } else {
+  //           SetNotification('warning');
+  //           SetMessage('Has cancelado la actualización de la reputación.');
+  //         }
+  //       });
+  //   } catch (error) {
+  //     SetNotification('error');
+  //     SetMessage(
+  //       'Hubo un error durante la actualización de la reputación, intenta más tarde.'
+  //     );
+  //     console.log('error');
+  //   }
+  // };
 
   useEffect(() => {
     setDataKey(
@@ -73,15 +75,10 @@ export default ({ drizzle, drizzleState }) => {
   }, [dataKey, methodArgs]);
 
   if (!(dataKey in candidateInfo)) {
-    return <span>Fetching...</span>;
+    return <CircularProgress />;
   }
   var candidate = candidateInfo[dataKey].value;
-  const politicalParties = {
-    0: 'PRI',
-    1: 'PAN',
-    2: 'PRD',
-    3: 'PT',
-  };
+
   return (
     <>
       <div className="section">
@@ -100,8 +97,9 @@ export default ({ drizzle, drizzleState }) => {
                 <CardMedia
                   component="img"
                   alt={`Partido ${politicalParties[candidate.party]}`}
-                  height="140"
-                  image="/static/images/cards/contemplative-reptile.jpg"
+                  src={`/images/politicalParties/${
+                    politicalParties[candidate.party]
+                  }.png`}
                   title={`Partido ${candidate.party}`}
                 />
                 <CardContent>
@@ -116,9 +114,8 @@ export default ({ drizzle, drizzleState }) => {
                     color="textSecondary"
                     component="p"
                   >
-                    Candidato por el partido
-                    {politicalParties[candidate.party]} , desde el periodo{' '}
-                    {candidate.starting_period}. Contacto en:
+                    Candidato por el partido {politicalParties[candidate.party]}{' '}
+                    , desde el periodo {candidate.starting_period}. Contacto en:
                   </Typography>
                 </CardContent>
               </CardActionArea>
@@ -126,11 +123,20 @@ export default ({ drizzle, drizzleState }) => {
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
                     {' '}
-                    <Button variant="outlined" fullWidth={true}>
+                    <Button
+                      variant="contained"
+                      disableElevation
+                      size="small"
+                      color="primary"
+                      fullWidth={true}
+                      onClick={() => {
+                        window.location = 'mailto:' + candidate.email;
+                      }}
+                    >
                       {candidate.email}
                     </Button>
                   </Grid>
-                  <Grid item xs={12}>
+                  {/* <Grid item xs={12}>
                     <Button
                       variant="contained"
                       disableElevation
@@ -141,7 +147,7 @@ export default ({ drizzle, drizzleState }) => {
                     >
                       Actualizar reputación
                     </Button>
-                  </Grid>
+                  </Grid> */}
                 </Grid>
               </CardActions>
             </Card>

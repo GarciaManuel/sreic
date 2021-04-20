@@ -35,7 +35,7 @@ export default ({ drizzle, drizzleState, proposalIndex, handleClose }) => {
           if (error.code === -32603) {
             SetNotification('error');
             SetMessage(
-              'La votación no pudo ser completada ya que has participado previamente.'
+              'La votación no pudo ser completada ya que o has participado previamente, o no eres parte del distrito de la propuesta.'
             );
           } else {
             SetNotification('warning');
@@ -60,8 +60,8 @@ export default ({ drizzle, drizzleState, proposalIndex, handleClose }) => {
         <FormControl component="fieldset" error={error}>
           <h4>Votación para la propuesta: </h4>
           <Alert severity="info">
-            Solo podrás votar a propuesta de candidaturas a distrito 0 y al que
-            fuíste registrado.
+            Solo podrás votar las propuesta de candidaturas referentes a todo el
+            estado y las de tu distrito.
           </Alert>
           <RadioGroup
             aria-label="voting"

@@ -12,6 +12,7 @@ import {
 } from '@material-ui/core';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import politicalParties from './PoliticalParties';
 
 export default ({ drizzle, drizzleState }) => {
   const { SetNotification, SetMessage } = React.useContext(AppStateContext);
@@ -79,12 +80,6 @@ export default ({ drizzle, drizzleState }) => {
     }
   };
 
-  const politicalParties = {
-    0: 'PRI',
-    1: 'PAN',
-    2: 'PRD',
-    3: 'PT',
-  };
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -228,9 +223,12 @@ export default ({ drizzle, drizzleState }) => {
                   <MenuItem value={-1} key={-1}>
                     Selecciona un distrito
                   </MenuItem>
-                  {[...Array(20)].map((val, i) => (
-                    <MenuItem value={i} key={i}>
-                      {i}
+                  <MenuItem value={0} key={0}>
+                    Todos los distritos
+                  </MenuItem>
+                  {[...Array(19)].map((val, i) => (
+                    <MenuItem value={i + 1} key={i + 1}>
+                      {i + 1}
                     </MenuItem>
                   ))}
                 </Select>

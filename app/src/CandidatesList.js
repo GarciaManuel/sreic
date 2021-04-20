@@ -7,7 +7,7 @@ import Candidate from './Candidate';
 
 const { ContractData } = newContextComponents;
 export default ({ drizzle, drizzleState }) => {
-  const [isCandidate, setIsCandidate] = useState(false);
+  const [candidateDistrict, setCandidateDistrict] = useState(-1);
   const [candidates, setCandidates] = useState([]);
   const mainAccount = drizzleState.accounts[0];
   const contractMethods = drizzle.contracts.ProposalContract.methods;
@@ -15,15 +15,18 @@ export default ({ drizzle, drizzleState }) => {
   useEffect(() => {
     const canPropose = async () => {
       try {
-        const owner = await contractMethods.isCandidate(mainAccount).call();
-        if (owner === true) return setIsCandidate(true);
-        return setIsCandidate(false);
+        const owner = await contractMethods
+          .getCandidateDistrict(mainAccount)
+          .call();
+        if (owner) return setCandidateDistrict(parseInt(owner));
+        return setCandidateDistrict(-1);
       } catch {
-        return setIsCandidate(false);
+        return setCandidateDistrict(-1);
       }
     };
     canPropose();
-  }, [contractMethods, mainAccount]);
+    // eslint-disable-next-line
+  }, [contractMethods]);
 
   var candidatesInfo = drizzleState.contracts.ProposalContract.getAllCandidates;
   useEffect(() => {
@@ -32,6 +35,7 @@ export default ({ drizzle, drizzleState }) => {
     };
     getCandidates();
   }, [candidatesInfo]);
+
   return (
     <>
       <div className="section">
@@ -64,12 +68,13 @@ export default ({ drizzle, drizzleState }) => {
             alignItems="center"
             justify="center"
           >
-            {!isCandidate ? (
+            {candidateDistrict === -1 ? (
               <></>
             ) : (
               <ProposalForm
                 drizzle={drizzle}
                 drizzleState={drizzleState}
+                candidateDistrict={candidateDistrict}
               ></ProposalForm>
             )}
           </Grid>

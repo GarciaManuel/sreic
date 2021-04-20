@@ -9,6 +9,9 @@ import {
 } from '@material-ui/core';
 
 export default ({ proposalInfo, handleOpen }) => {
+  var proposalDistrict = ' Enfocada al distrito ' + proposalInfo.district;
+  if (proposalInfo.district === 0)
+    proposalDistrict = ' Enfocada a todo el estado';
   return (
     <>
       <Divider variant="inset" component="li" />
@@ -20,8 +23,9 @@ export default ({ proposalInfo, handleOpen }) => {
                 <a
                   href={`https://ipfs.infura.io/ipfs/${proposalInfo.document_hash}`}
                 >
-                  {proposalInfo.name}
-                </a>
+                  {proposalInfo.name}{' '}
+                </a>{' '}
+                - {proposalInfo.period}
               </React.Fragment>
             }
             secondary={
@@ -35,11 +39,10 @@ export default ({ proposalInfo, handleOpen }) => {
                 </Typography>
                 {'   -   ' +
                   proposalInfo.description +
-                  ' Perteneciente al periodo ' +
-                  proposalInfo.period +
+                  proposalDistrict +
                   '. Han participado  ' +
                   proposalInfo.votes +
-                  ' ciudadanos.'}
+                  ' ciudadanos en la votación.'}
               </React.Fragment>
             }
           />

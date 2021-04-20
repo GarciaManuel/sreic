@@ -60,6 +60,10 @@ export default ({
         </DialogTitle>
         <DialogContent dividers>
           <Typography gutterBottom>{currentProposal.description}</Typography>
+          <Typography gutterBottom>
+            Actualmente: {currentProposal.positive}✓ {currentProposal.neutral}⊝{' '}
+            {currentProposal.negative}ｘ
+          </Typography>
           <VoteForm
             drizzle={drizzle}
             drizzleState={drizzleState}

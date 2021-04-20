@@ -1,3 +1,4 @@
+import 'fontsource-roboto';
 import React from 'react';
 import { useEffect } from 'react';
 import { DrizzleContext } from '@drizzle/react-plugin';
@@ -10,6 +11,7 @@ import { Route, BrowserRouter as Router } from 'react-router-dom';
 import CandidateProfile from './CandidateProfile';
 import Navbar from './Navbar';
 import Admin from './Admin';
+import { CircularProgress } from '@material-ui/core';
 
 const drizzle = new Drizzle(drizzleOptions);
 const App = () => {
@@ -32,7 +34,7 @@ const App = () => {
           const { drizzle, drizzleState, initialized } = drizzleContext;
 
           if (!initialized) {
-            return 'Loading...';
+            return <CircularProgress></CircularProgress>;
           }
 
           return (

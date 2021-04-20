@@ -5,9 +5,6 @@ import {
   Button,
   TextField,
   FormControl,
-  List,
-  Divider,
-  ListItemText,
   InputLabel,
   Select,
   MenuItem,
@@ -15,11 +12,12 @@ import {
 } from '@material-ui/core';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import VotersTable from './VotersTable';
 
 export default ({ drizzle, drizzleState }) => {
   const { SetNotification, SetMessage } = React.useContext(AppStateContext);
-  const [votersAddresses, setVotersAddresses] = useState([]);
-  const [votersDistricts, setVotersDistricts] = useState([]);
+  const [votersDict, setVotersDict] = useState({});
+  const [rows, setRows] = useState([]);
   const [voterAddress, setVoterAddress] = useState('');
   const [voterDistrict, setVoterDistrict] = useState(-1);
   const [touched, setTouched] = useState({
@@ -31,12 +29,12 @@ export default ({ drizzle, drizzleState }) => {
 
   const addVoterAddress = (voterAddr, voterDist) => {
     if (voterAddr !== '' && voterDist !== -1) {
-      setVotersAddresses([...votersAddresses, voterAddr]);
-      setVotersDistricts([...votersDistricts, voterDist]);
-      setTouched((touched) => ({
+      votersDict[`${voterAddr}`] = voterDist;
+      setTouched({
         voterAddress: false,
         voterDistrict: false,
-      }));
+      });
+      setRows(createDataFromDict(votersDict));
     } else {
       SetNotification('error');
       SetMessage(
@@ -52,13 +50,12 @@ export default ({ drizzle, drizzleState }) => {
   const onSubmit = async () => {
     try {
       contractMethods
-        .defineVoters(votersAddresses, votersDistricts)
+        .defineVoters(Object.keys(votersDict), Object.values(votersDict))
         .send()
         .then(() => {
           SetNotification('success');
           SetMessage('Los votantes se ha registrado correctamente.');
-          setVotersAddresses([]);
-          setVotersDistricts([]);
+          setVotersDict({});
           setVoterAddress('');
           setVoterDistrict(-1);
         })
@@ -78,6 +75,28 @@ export default ({ drizzle, drizzleState }) => {
       );
       console.log('error');
     }
+  };
+
+  const deleteVoters = (voters) => {
+    if (voters.length === Object.keys(votersDict).length) {
+      setVotersDict({});
+    } else {
+      voters.forEach((address) => {
+        delete votersDict[address];
+      });
+    }
+    setRows(createDataFromDict(votersDict));
+  };
+
+  const createDataFromDict = (dict) => {
+    var rows = [];
+    for (var key in dict) {
+      rows.push({
+        walletNumber: key,
+        district: dict[key],
+      });
+    }
+    return rows;
   };
 
   return (
@@ -174,28 +193,10 @@ export default ({ drizzle, drizzleState }) => {
           alignItems="center"
           justify="center"
         >
-          {votersAddresses.length > 0 ? (
+          {Object.keys(votersDict).length !== 0 ? (
             <form onSubmit={handleSubmit(onSubmit)}>
               <FormControl component="fieldset">
-                <h2>Votantes agregados</h2>
-
-                <FormLabel sx={{ mb: 3 }}>
-                  Lista de votantes deseados a registrar.
-                </FormLabel>
-                <List style={{ maxHeight: 500, overflow: 'auto' }}>
-                  {votersAddresses.map((voterAddr, i) => (
-                    <div key={i}>
-                      <Divider variant="inset" component="li" />
-                      <ListItemText
-                        primary={
-                          <React.Fragment>
-                            {voterAddr} - {votersDistricts[i]}
-                          </React.Fragment>
-                        }
-                      ></ListItemText>
-                    </div>
-                  ))}
-                </List>
+                <VotersTable rows={rows} deleteFunction={deleteVoters} />
                 <Button
                   sx={{ mt: 1, mr: 1 }}
                   type="submit"
