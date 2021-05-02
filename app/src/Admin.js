@@ -4,9 +4,10 @@ import { Button, Grid } from '@material-ui/core';
 import VotersForm from './VotersForm';
 import CandidateForm from './CandidateForm';
 import ActivationCandidatesList from './ActivationCandidatesList';
+import VotersAutocomplete from './VotersAutocomplete';
 export default ({ drizzle, drizzleState }) => {
   const [renderForm, setRenderForm] = useState(0);
-
+  
   return (
     <>
       <div className="section">
@@ -56,6 +57,19 @@ export default ({ drizzle, drizzleState }) => {
           )}
 
           {renderForm === 2 ? (
+            <>
+            <Grid
+            item
+            xs={12}
+            container
+            spacing={0}
+            direction="column"
+            alignItems="center"
+            justify="center"
+          >
+            <VotersAutocomplete drizzle={drizzle} drizzleState={drizzleState} />
+          </Grid>
+
             <Grid
               item
               xs={12}
@@ -67,6 +81,7 @@ export default ({ drizzle, drizzleState }) => {
             >
               <VotersForm drizzle={drizzle} drizzleState={drizzleState} />
             </Grid>
+            </>
           ) : (
             ''
           )}

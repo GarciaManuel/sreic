@@ -42,6 +42,8 @@ contract ProposalContract {
     struct Voter {
         string electionKey;
         uint district;
+        uint index;
+
     }
         
     mapping (uint=>Proposal) private allProposals;
@@ -49,12 +51,14 @@ contract ProposalContract {
 
     mapping (address=>Candidate) private allCandidates;
     address[] private allCandidatesIndex;
-    mapping(string => address) candidateElectionKeys;
+    mapping(string => address) private candidateElectionKeys;
 
 
-    mapping(uint => mapping(string => bool)) proposalsVoters;
-    mapping(address => Voter) voters;
-    mapping(string => address) electionKeys;
+    mapping(uint => mapping(string => bool)) private proposalsVoters;
+    mapping(address => Voter) private voters;
+    mapping(string => address) private electionKeys;
+    string[] private allVotersIndex;
+
 
     address private owner;
 
@@ -166,15 +170,24 @@ contract ProposalContract {
     function defineVoters(address[] memory usersAddresses, uint256[] memory usersDistricts, string[] memory keys) public isOwner returns(bool sucess){
         require(usersAddresses.length>0);
         for (uint256 index = 0; index < usersAddresses.length; index++) {
+            uint currentIndex = 0;
             if(electionKeys[keys[index]]!= address(0)){
 
                 voters[electionKeys[keys[index]]].electionKey = '';
                 voters[electionKeys[keys[index]]].district = 0;
+                currentIndex = voters[electionKeys[keys[index]]].index;
+                voters[electionKeys[keys[index]]].index = 0;  
             }
 
             electionKeys[keys[index]] = usersAddresses[index];
             voters[usersAddresses[index]].electionKey = keys[index];
             voters[usersAddresses[index]].district = usersDistricts[index];
+
+            if(currentIndex == 0){
+                voters[usersAddresses[index]].index = allVotersIndex.push(keys[index])-1;  
+            }else{
+                voters[usersAddresses[index]].index = currentIndex;
+            }
             
         }
         return true;
@@ -265,6 +278,15 @@ contract ProposalContract {
         }
 
         return allCands;
+    }
+
+    function getAllVoters() public view returns(Voter[] memory){
+        Voter[] memory allVoters = new Voter[](allVotersIndex.length);
+        for (uint256 index = 0; index < allVotersIndex.length; index++) {
+            allVoters[index] = voters[electionKeys[allVotersIndex[index]]];
+        }
+
+        return allVoters;
     }
 
     function getProposalsByCandidate(uint indexCandidate) public view returns(Proposal[] memory){
