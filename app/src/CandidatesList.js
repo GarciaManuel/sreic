@@ -1,9 +1,11 @@
-import React from 'react';
-import { newContextComponents } from '@drizzle/react-components';
-import { useState, useEffect } from 'react';
-import { Grid, List, ListItem } from '@material-ui/core';
-import ProposalForm from './ProposalForm';
-import Candidate from './Candidate';
+import React from "react";
+import { newContextComponents } from "@drizzle/react-components";
+import { useState, useEffect } from "react";
+import { Grid, List, ListItem, Alert } from "@material-ui/core";
+import VotersAutocomplete from "./VotersAutocomplete";
+
+import ProposalForm from "./ProposalForm";
+import Candidate from "./Candidate";
 
 const { ContractData } = newContextComponents;
 export default ({ drizzle, drizzleState }) => {
@@ -32,7 +34,7 @@ export default ({ drizzle, drizzleState }) => {
     drizzleState.contracts.ProposalContract.getAllActiveCandidates;
   useEffect(() => {
     const getCandidates = () => {
-      if ('0x0' in candidatesInfo) setCandidates(candidatesInfo['0x0'].value);
+      if ("0x0" in candidatesInfo) setCandidates(candidatesInfo["0x0"].value);
     };
     getCandidates();
   }, [candidatesInfo]);
@@ -40,7 +42,7 @@ export default ({ drizzle, drizzleState }) => {
   return (
     <>
       <div className="section">
-        <ListItem style={{ display: 'none' }}>
+        <ListItem style={{ display: "none" }}>
           <ContractData
             drizzle={drizzle}
             drizzleState={drizzleState}
@@ -51,10 +53,14 @@ export default ({ drizzle, drizzleState }) => {
       </div>
 
       <div className="section">
-        <Grid container spacing={2}>
+        <Grid container spacing={4}>
           <Grid item xs={6}>
             <h2>Candidatos en contienda</h2>
-            <List style={{ maxHeight: 700, overflow: 'auto' }}>
+            <Alert severity="info" sx={{ mt: 3, mb: 3 }}>
+              Recuerda que para visualziar las propuestas de los candidatos hay
+              que realizar un click en su perfil.
+            </Alert>
+            <List style={{ maxHeight: 700, overflow: "auto" }}>
               {candidates.map((candidateInfo, i) => {
                 if (candidateInfo.active)
                   return <Candidate candidateInfo={candidateInfo} key={i} />;
@@ -72,7 +78,12 @@ export default ({ drizzle, drizzleState }) => {
             justify="center"
           >
             {candidateDistrict === -1 ? (
-              <></>
+              <>
+                <VotersAutocomplete
+                  drizzle={drizzle}
+                  drizzleState={drizzleState}
+                />
+              </>
             ) : (
               <ProposalForm
                 drizzle={drizzle}

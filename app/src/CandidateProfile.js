@@ -1,7 +1,7 @@
-import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import React from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import {
   Grid,
   Card,
@@ -12,10 +12,10 @@ import {
   CardActions,
   Button,
   CircularProgress,
-} from '@material-ui/core';
-import ProposalsList from './ProposalsList';
+} from "@material-ui/core";
+import ProposalsList from "./ProposalsList";
 // import { AppStateContext } from './AppStateProvider';
-import politicalParties from './PoliticalParties';
+import politicalParties from "./PoliticalParties";
 
 const useStyles = makeStyles({
   root: {
@@ -67,7 +67,7 @@ export default ({ drizzle, drizzleState }) => {
 
   useEffect(() => {
     setDataKey(
-      contracts['ProposalContract'].methods['getCandidateByIndex'].cacheCall(
+      contracts["ProposalContract"].methods["getCandidateByIndex"].cacheCall(
         ...methodArgs
       )
     );
@@ -80,6 +80,12 @@ export default ({ drizzle, drizzleState }) => {
   var candidate = candidateInfo[dataKey].value;
   if (candidate === null) {
     return <p>Candidato inexistente</p>;
+  }
+  var district = "";
+  if (candidate.district === 0) {
+    district = "Candidat@ a gobernatura";
+  } else {
+    district = "Distrito " + candidate.district;
   }
   return (
     <>
@@ -112,23 +118,23 @@ export default ({ drizzle, drizzleState }) => {
                       {candidate.name}
                     </Typography>
                     <Typography variant="body1" component="h5">
-                      Distrito : {candidate.district}
+                      {district}
                     </Typography>
                     <Typography
                       variant="body2"
                       color="textSecondary"
                       component="p"
                     >
-                      Candidato por el partido{' '}
-                      {politicalParties[candidate.party]} , desde el periodo{' '}
-                      {candidate.starting_period}. Contacto en:
+                      Candidato por el partido{" "}
+                      {politicalParties[candidate.party]} , desde el periodo{" "}
+                      {candidate.startingPeriod}. Contacto en:
                     </Typography>
                   </CardContent>
                 </CardActionArea>
                 <CardActions>
                   <Grid container spacing={2}>
                     <Grid item xs={12}>
-                      {' '}
+                      {" "}
                       <Button
                         variant="contained"
                         disableElevation
@@ -136,7 +142,7 @@ export default ({ drizzle, drizzleState }) => {
                         color="primary"
                         fullWidth={true}
                         onClick={() => {
-                          window.location = 'mailto:' + candidate.email;
+                          window.location = "mailto:" + candidate.email;
                         }}
                       >
                         {candidate.email}

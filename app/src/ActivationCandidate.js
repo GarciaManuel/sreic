@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Divider,
   ListItem,
@@ -6,11 +6,17 @@ import {
   Typography,
   Button,
   Grid,
-} from '@material-ui/core';
-import politicalParties from './PoliticalParties';
-import { Link } from 'react-router-dom';
+} from "@material-ui/core";
+import politicalParties from "./PoliticalParties";
+import { Link } from "react-router-dom";
 
 export default ({ candidateInfo, handleOpen }) => {
+  var district = "";
+  if (candidateInfo.district === 0) {
+    district = "Candidat@ a gobernatura";
+  } else {
+    district = "Distrito " + candidateInfo.district;
+  }
   return (
     <>
       <Divider variant="inset" component="li" />
@@ -31,13 +37,12 @@ export default ({ candidateInfo, handleOpen }) => {
                   variant="body2"
                   color="textPrimary"
                 >
-                  Partido : {politicalParties[candidateInfo.party]} - Distrito :{' '}
-                  {candidateInfo.district}
+                  Partido : {politicalParties[candidateInfo.party]} - {district}
                 </Typography>
-                {'     ' +
-                  'Con  ' +
+                {"     " +
+                  "Con  " +
                   candidateInfo.proposalsIndex.length +
-                  ' propuestas.'}
+                  " propuestas."}
               </React.Fragment>
             }
           />
