@@ -1,8 +1,8 @@
-import React from 'react';
-import { useState, useEffect } from 'react';
-import { Grid, List, CircularProgress } from '@material-ui/core';
-import Proposal from './ActivationCandidate';
-import VoteDialog from './VoteDialog';
+import React from "react";
+import { useState, useEffect } from "react";
+import { Grid, List, CircularProgress } from "@material-ui/core";
+import Proposal from "./Proposal";
+import VoteDialog from "./VoteDialog";
 
 export default ({ drizzle, drizzleState, indexCandidate }) => {
   const [dataKey, setDataKey] = useState(null);
@@ -47,8 +47,8 @@ export default ({ drizzle, drizzleState, indexCandidate }) => {
 
   useEffect(() => {
     setDataKey(
-      contracts['ProposalContract'].methods[
-        'getProposalsByCandidate'
+      contracts["ProposalContract"].methods[
+        "getProposalsByCandidate"
       ].cacheCall(...methodArgs)
     );
     // eslint-disable-next-line
@@ -66,7 +66,7 @@ export default ({ drizzle, drizzleState, indexCandidate }) => {
             {proposals.length > 0 ? (
               <>
                 <h2>Propuestas del candidato</h2>
-                <List style={{ maxHeight: 500, overflow: 'auto' }}>
+                <List style={{ maxHeight: 500, overflow: "auto" }}>
                   {proposals.map((proposalInfo, i) => (
                     <Proposal
                       proposalInfo={proposalInfo}

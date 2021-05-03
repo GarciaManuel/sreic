@@ -12,7 +12,10 @@ import { Link } from "react-router-dom";
 
 export default ({ candidateInfo, handleOpen }) => {
   var district = "";
-  if (candidateInfo.district === 0) {
+  if (candidateInfo === undefined) {
+    return <></>;
+  }
+  if (candidateInfo.district === "0") {
     district = "Candidat@ a gobernatura";
   } else {
     district = "Distrito " + candidateInfo.district;

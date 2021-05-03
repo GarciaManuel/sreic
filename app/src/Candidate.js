@@ -12,7 +12,7 @@ import politicalParties from "./PoliticalParties";
 
 export default ({ candidateInfo }) => {
   var district = "";
-  if (candidateInfo.district === 0) {
+  if (candidateInfo.district === "0") {
     district = "Candidat@ a gobernatura";
   } else {
     district = "Distrito " + candidateInfo.district;

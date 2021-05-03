@@ -82,7 +82,7 @@ export default ({ drizzle, drizzleState }) => {
     return <p>Candidato inexistente</p>;
   }
   var district = "";
-  if (candidate.district === 0) {
+  if (candidate.district === "0") {
     district = "Candidat@ a gobernatura";
   } else {
     district = "Distrito " + candidate.district;

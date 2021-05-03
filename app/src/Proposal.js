@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Divider,
   ListItem,
@@ -6,12 +6,13 @@ import {
   Typography,
   Button,
   Grid,
-} from '@material-ui/core';
+} from "@material-ui/core";
 
 export default ({ proposalInfo, handleOpen }) => {
-  var proposalDistrict = ' Enfocada al distrito ' + proposalInfo.district;
-  if (proposalInfo.district === 0)
-    proposalDistrict = ' Enfocada a todo el estado';
+  var proposalDistrict = " Enfocada al distrito " + proposalInfo.district;
+  if (proposalInfo.district === "0")
+    proposalDistrict = " Enfocada a todo el estado";
+  console.log(proposalInfo);
   return (
     <>
       <Divider variant="inset" component="li" />
@@ -21,10 +22,10 @@ export default ({ proposalInfo, handleOpen }) => {
             primary={
               <React.Fragment>
                 <a
-                  href={`https://ipfs.infura.io/ipfs/${proposalInfo.document_hash}`}
+                  href={`https://ipfs.infura.io/ipfs/${proposalInfo.documentHash}`}
                 >
-                  {proposalInfo.name}{' '}
-                </a>{' '}
+                  {proposalInfo.name}{" "}
+                </a>{" "}
                 - {proposalInfo.period}
               </React.Fragment>
             }
@@ -37,12 +38,12 @@ export default ({ proposalInfo, handleOpen }) => {
                 >
                   Reputación : {proposalInfo.reputation}
                 </Typography>
-                {'   -   ' +
+                {"   -   " +
                   proposalInfo.description +
                   proposalDistrict +
-                  '. Han participado  ' +
+                  ". Han participado  " +
                   proposalInfo.votes +
-                  ' ciudadanos en la votación.'}
+                  " ciudadanos en la votación."}
               </React.Fragment>
             }
           />
