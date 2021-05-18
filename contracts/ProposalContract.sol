@@ -79,21 +79,21 @@ contract ProposalContract {
     }
     constructor() public{
         owner = msg.sender; // 'msg.sender' is sender of current call, contract deployer for a constructor
-        createCandidate(0xFfDb48566aC7f37C965ba6247534cD3eB6F81522, "Abigail Arredondo", Parties.PRI, "2021", "arredondo@pri.mx", 0, 'gthrmr97070422h100');
-        createCandidate(0x1cB2AC85653179655C420e8a923c50bE467F6035, "Mauricio Kuri", Parties.PAN, "2021", "kuri@pan.mx", 3, 'gqhrmr97070422h100');
-        createCandidate(0x064B09b4Cecd636A839f773C1f6308bA023F0e05, "Raquel Ruiz de Santiago", Parties.PRD, "2021", "raquelruiz@prd.mx", 0, 'gmhrmr97070422h100');
+        createCandidate(0x0E981075d9b24c439B0F332c9E1910131f478F7E, "Abigail Arredondo", Parties.PRI, "2021", "arredondo@pri.mx", 0, 'gthrmr97070422h100');
+        createCandidate(0x242FA29F25bAED9E6f425b914B659cC8F78E565f, "Mauricio Kuri", Parties.PAN, "2021", "kuri@pan.mx", 3, 'gqhrmr97070422h100');
+        createCandidate(0x067350e0B0dAbe2eeDd83341A44c77E8833FBa53, "Raquel Ruiz de Santiago", Parties.PRD, "2021", "raquelruiz@prd.mx", 0, 'gmhrmr97070422h100');
         address[] memory vtrs = new address[](3);
-        vtrs[0] = 0xe2089dC97fbd59456B3DB358c72ca537C5575565;
-        vtrs[1] = 0x81602b40436804eff1dCb92D20FEFCfa326fb757;
-        vtrs[2] = 0x24BF7B4AD87794Ff5FB987aF9E3A6aaf8dd87d95;
+        vtrs[0] = 0x89bc45D0da40a5285f8c9f2C5D94b2a444754Fa3;
+        vtrs[1] = 0xAF488e245132af5A545439275bdf62f2bc34c016;
+        vtrs[2] = 0x5c62F13B9CD0f3F4Ed6945Aced3fB337EA61DbC2;
         uint256[] memory dst = new uint256[](3);
         dst[0] = 0;
         dst[1] = 3;
         dst[2] = 1;
         string[] memory kys = new string[](3);
-        kys[0] = 'grhrmr97070422h100';
-        kys[1] = 'grhrmn96060322h000';
-        kys[2] = 'grhrmn99090921h200';
+        kys[0] = 'GRHRMN97070422H100';
+        kys[1] = 'ATFRTR96060322H000';
+        kys[2] = 'LPURUR99090921H200';
 
         defineVoters(vtrs, dst, kys);
         changeActivenessCandidate(0);
@@ -280,13 +280,10 @@ contract ProposalContract {
         return allCands;
     }
 
-    function getAllVoters() public view returns(Voter[] memory){
-        Voter[] memory allVoters = new Voter[](allVotersIndex.length);
-        for (uint256 index = 0; index < allVotersIndex.length; index++) {
-            allVoters[index] = voters[electionKeys[allVotersIndex[index]]];
-        }
+    function getAllVoters() public view returns(string[] memory){
+    
 
-        return allVoters;
+        return allVotersIndex;
     }
 
     function getProposalsByCandidate(uint indexCandidate) public view returns(Proposal[] memory){
