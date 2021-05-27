@@ -24,7 +24,7 @@ module.exports = {
       provider: () =>
         new HDWalletProvider(
           seed_phrase,
-          `https://ropsten.infura.io/v3/db68b3b6822c4d44a81b51917eabea27`
+          `https://ropsten.infura.io/v3/a1ca1ffb717d43888daad284ebf5ee35`
         ),
       network_id: 3, // Ropsten's id
       confirmations: 2, // # of confs to wait between deployments. (default: 0)
