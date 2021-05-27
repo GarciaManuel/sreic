@@ -3,13 +3,11 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
 import Button from '@material-ui/core/Button';
+import Alert from '@material-ui/core/Alert';
 import { AppStateContext } from './AppStateProvider';
-import { newContextComponents } from '@drizzle/react-components';
 
-export default ({ drizzle, drizzleState }) => {
-  const { ContractData } = newContextComponents;
+export default ({ drizzle, drizzleState, proposalIndex, handleClose }) => {
   const { SetNotification, SetMessage } = React.useContext(AppStateContext);
   const [value, setValue] = React.useState('0');
   const [error, setError] = React.useState(false);
@@ -24,30 +22,34 @@ export default ({ drizzle, drizzleState }) => {
     let submitValue = parseInt(value);
     try {
       drizzle.contracts.ProposalContract.methods
-        .vote(submitValue)
+        .voteProposal(proposalIndex, submitValue)
         .send()
         .then(() => {
           SetNotification('success');
           SetMessage(
             'La votación fue realizada con éxito, se ha registrado tu participación.'
           );
+          handleClose();
         })
         .catch(function (error) {
           if (error.code === -32603) {
             SetNotification('error');
             SetMessage(
-              'La votación no pudo ser completada ya que has participado previamente.'
+              'La votación no pudo ser completada ya que o has participado previamente, o no eres parte del distrito de la propuesta.'
             );
           } else {
             SetNotification('warning');
             SetMessage('Has cancelado tu participación en la votación.');
           }
+          handleClose();
         });
     } catch (error) {
       SetNotification('error');
       SetMessage(
         'Hubo un error durante la ejecución del contrato en la red, intenta más tarde.'
       );
+      handleClose();
+
       console.log('error');
     }
   };
@@ -56,16 +58,11 @@ export default ({ drizzle, drizzleState }) => {
     <>
       <form onSubmit={handleSubmit}>
         <FormControl component="fieldset" error={error}>
-          <h2>Votación para la propuesta: </h2>
-
-          <FormLabel>
-            <ContractData
-              drizzle={drizzle}
-              drizzleState={drizzleState}
-              contract="ProposalContract"
-              method="proposal_description"
-            />
-          </FormLabel>
+          <h4>Votación para la propuesta: </h4>
+          <Alert severity="info">
+            Solo podrás votar las propuesta de candidaturas referentes a todo el
+            estado y las de tu distrito.
+          </Alert>
           <RadioGroup
             aria-label="voting"
             name="voting"
