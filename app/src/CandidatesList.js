@@ -6,6 +6,7 @@ import VotersAutocomplete from "./VotersAutocomplete";
 
 import ProposalForm from "./ProposalForm";
 import Candidate from "./Candidate";
+import VoterSearch from "./VoterSearch";
 
 const { ContractData } = newContextComponents;
 export default ({ drizzle, drizzleState }) => {
@@ -79,10 +80,7 @@ export default ({ drizzle, drizzleState }) => {
           >
             {candidateDistrict === -1 ? (
               <>
-                <VotersAutocomplete
-                  drizzle={drizzle}
-                  drizzleState={drizzleState}
-                />
+                <VoterSearch drizzle={drizzle} drizzleState={drizzleState} />
               </>
             ) : (
               <ProposalForm
